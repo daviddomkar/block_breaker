@@ -11,13 +11,11 @@ class GameScreen extends StatefulWidget {
 }
 
 class _GameScreenState extends State<GameScreen> {
-  final _game = BlockBreakerGame();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: GameRenderWidget(
-        game: _game,
+        game: BlockBreakerGame(),
       ),
     );
   }
