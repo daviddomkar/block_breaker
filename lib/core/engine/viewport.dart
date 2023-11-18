@@ -2,9 +2,11 @@ import 'dart:ui';
 import 'package:vector_math/vector_math_64.dart';
 
 class Viewport {
-  final Size _size;
   final Offset _offset;
   final bool _flipY;
+
+  final Size _size;
+  Size? _widgetSize;
 
   Viewport({
     required Size size,
@@ -14,19 +16,22 @@ class Viewport {
         _offset = offset,
         _flipY = flipY;
 
-  void render(Canvas canvas, Size size, void Function(Canvas, Size) render) {
-    final transform = computeViewportTransformForSize(size);
+  void render(Canvas canvas, void Function(Canvas, Size) render) {
+    final transform = computeViewportTransform();
 
     canvas.save();
     canvas.transform(transform.storage);
 
-    final scaledSize = computeScaledSize(size);
+    final scaledSize = computeScaledSize();
     render(canvas, scaledSize);
 
     canvas.restore();
   }
 
-  Vector2 computeScaleForSize(Size size) {
+  Vector2 computeScale() {
+    assert(_widgetSize != null);
+    final size = _widgetSize!;
+
     return switch (_size) {
       Size(width: var width, height: var height)
           when width != double.infinity && height != double.infinity =>
@@ -41,19 +46,28 @@ class Viewport {
     };
   }
 
-  Size computeScaledSize(Size size) {
-    final scale = computeScaleForSize(size);
+  Size computeScaledSize() {
+    assert(_widgetSize != null);
+    final size = _widgetSize!;
+
+    final scale = computeScale();
     return Size(size.width / scale.x, size.height / scale.y);
   }
 
-  Matrix4 computeViewportTransformForSize(Size size) {
-    final scale = computeScaleForSize(size);
-    final scaledSize = Size(size.width / scale.x, size.height / scale.y);
+  Matrix4 computeViewportTransform() {
+    assert(_widgetSize != null);
+    final size = _widgetSize!;
+
+    final scale = computeScale();
 
     final transform = Matrix4.identity();
     transform.scale(scale.x, scale.y);
 
     if (_flipY) {
+      final scaledSize = Size(
+        size.width / scale.x,
+        size.height / scale.y,
+      );
       transform.translate(-_offset.dx, -_offset.dy + scaledSize.height);
       transform.scale(1.0, -1.0);
     } else {
@@ -63,11 +77,20 @@ class Viewport {
     return transform;
   }
 
-  Vector2 transformPoint(Vector2 point, Size size) {
-    final transform = computeViewportTransformForSize(size);
+  Offset transformOffset(Offset offset) {
+    final transform = computeViewportTransform();
     final inverse = Matrix4.inverted(transform);
-    final transformed = inverse.transform3(Vector3(point.x, point.y, 0.0));
+    final transformed = inverse.transform3(Vector3(offset.dx, offset.dy, 0.0));
 
-    return Vector2(transformed.x, transformed.y);
+    return Offset(transformed.x, transformed.y);
   }
+
+  void notifyWidgetPerformedResize(Size size) {
+    _widgetSize = size;
+  }
+
+  Size get size => computeScaledSize();
+
+  bool get hasWidgetSize => _widgetSize != null;
+  Size? get widgetSize => _widgetSize;
 }

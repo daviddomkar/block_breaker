@@ -5,38 +5,41 @@ import '../mixins/mouse_listener.dart';
 import '../mixins/pointer_listener.dart';
 import 'game_render_widget.dart';
 
-class GameWidget extends StatefulWidget {
+class GameWidget extends StatelessWidget {
   final Game game;
 
   const GameWidget({super.key, required this.game});
 
   @override
-  State<GameWidget> createState() => _GameWidgetState();
-}
-
-class _GameWidgetState extends State<GameWidget> {
-  @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final size = constraints.biggest;
+    return Listener(
+      onPointerMove: (event) {
+        if (game is PointerListener) {
+          final viewport = game.viewport;
 
-        return Listener(
-          onPointerMove: (event) {
-            if (widget.game is PointerListener) {
-              (widget.game as PointerListener).onPointerMove(event, size);
-            }
-          },
-          child: MouseRegion(
-            onHover: (event) {
-              if (widget.game is MouseListener) {
-                (widget.game as MouseListener).onMouseHover(event, size);
-              }
-            },
-            child: GameRenderWidget(game: widget.game),
-          ),
-        );
+          if (!viewport.hasWidgetSize) return;
+
+          final transform = viewport.computeViewportTransform();
+          final inverse = Matrix4.inverted(transform);
+
+          (game as PointerListener).onPointerMove(event.transformed(inverse));
+        }
       },
+      child: MouseRegion(
+        onHover: (event) {
+          if (game is MouseListener) {
+            final viewport = game.viewport;
+
+            if (!viewport.hasWidgetSize) return;
+
+            final transform = viewport.computeViewportTransform();
+            final inverse = Matrix4.inverted(transform);
+
+            (game as MouseListener).onMouseHover(event.transformed(inverse));
+          }
+        },
+        child: GameRenderWidget(game: game),
+      ),
     );
   }
 }
