@@ -11,10 +11,20 @@ import '../engine/viewport.dart';
 import '../game/entities/paddle.dart';
 
 class BlockBreakerGame extends Game with MouseListener, PointerListener {
+  final Image _cellTextureImage;
+  final FragmentProgram _gridShaderProgram;
+
+  late double _time;
+
+  late final FragmentShader _gridShader;
   late final Paddle _paddle;
 
-  BlockBreakerGame()
-      : super(
+  BlockBreakerGame({
+    required Image cellTextureImage,
+    required FragmentProgram gridShaderProgram,
+  })  : _cellTextureImage = cellTextureImage,
+        _gridShaderProgram = gridShaderProgram,
+        super(
           viewport: Viewport(
             size: const Size(
               480,
@@ -27,6 +37,11 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
 
   @override
   void init() {
+    _time = 0;
+
+    _gridShader = _gridShaderProgram.fragmentShader();
+    _gridShader.setImageSampler(0, _cellTextureImage);
+
     _paddle = Paddle(
       viewport: viewport,
       x: 0,
@@ -35,7 +50,9 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    _gridShader.dispose();
+  }
 
   @override
   void onPointerMove(PointerMoveEvent event) =>
@@ -46,11 +63,18 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
       _paddle.x = event.localPosition.dx;
 
   @override
-  void update(double dt) {}
+  void update(double dt) {
+    _time += dt;
+    _gridShader.setFloat(2, _time);
+  }
 
   @override
   void render(Canvas canvas) {
-    canvas.drawColor(const Color(0xFF0E1D2F), BlendMode.clear);
+    _gridShader.setFloat(0, viewport.size.width);
+    _gridShader.setFloat(1, viewport.size.height);
+
+    canvas.drawPaint(Paint()..shader = _gridShader);
+
     _paddle.render(canvas);
   }
 }

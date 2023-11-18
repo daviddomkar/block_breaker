@@ -19,3 +19,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/textures/cell.png
+
+  shaders:
+    - shaders/bloom.frag
+    - shaders/grid.frag

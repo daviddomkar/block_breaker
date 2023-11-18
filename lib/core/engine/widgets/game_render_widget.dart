@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
@@ -56,6 +58,9 @@ class GameRenderObject extends RenderBox with WidgetsBindingObserver {
     if (_game.viewport.widgetSize == null) {
       _game.viewport.notifyWidgetPerformedResize(size);
       _game.init();
+
+      final gameLoop = _gameLoop = GameLoop(onUpdate: _onUpdate);
+      gameLoop.start();
     } else {
       _game.viewport.notifyWidgetPerformedResize(size);
     }
@@ -78,6 +83,32 @@ class GameRenderObject extends RenderBox with WidgetsBindingObserver {
 
     context.canvas.restore();
     context.canvas.restore();
+
+    /*
+    context.pushLayer(
+      ImageFilterLayer(
+        imageFilter: ImageFilter.blur(
+          sigmaX: 5,
+          sigmaY: 5,
+        ),
+      ),
+      (PaintingContext context, Offset offset) {
+        context.canvas.save();
+        context.canvas.translate(offset.dx, offset.dy);
+
+        final transform = game.viewport.transform;
+
+        context.canvas.save();
+        context.canvas.transform(transform.storage);
+
+        game.render(context.canvas);
+
+        context.canvas.restore();
+        context.canvas.restore();
+      },
+      offset,
+    );
+    */
   }
 
   @override
@@ -100,9 +131,6 @@ class GameRenderObject extends RenderBox with WidgetsBindingObserver {
   bool get sizedByParent => true;
 
   void _attachGame() {
-    final gameLoop = _gameLoop = GameLoop(onUpdate: _onUpdate);
-    gameLoop.start();
-
     _bindLifecycleListener();
   }
 

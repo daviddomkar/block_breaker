@@ -34,7 +34,7 @@ class Paddle {
         _width,
         _kPaddleHeight,
       ),
-      Paint()..color = const Color(0xFFFF0000),
+      Paint()..color = const Color(0xFFFA6AA6),
     );
   }
 }
