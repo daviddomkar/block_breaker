@@ -27,28 +27,23 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
 
   @override
   void init() {
-    _paddle = Paddle(x: 0, width: 128);
+    _paddle = Paddle(
+      viewport: viewport,
+      x: 0,
+      width: 128,
+    );
   }
 
   @override
   void dispose() {}
 
   @override
-  void onPointerMove(PointerMoveEvent event) {
-    _changePaddleX(event.localPosition.dx);
-  }
+  void onPointerMove(PointerMoveEvent event) =>
+      _paddle.x = event.localPosition.dx;
 
   @override
-  void onMouseHover(PointerHoverEvent event) {
-    _changePaddleX(event.localPosition.dx);
-  }
-
-  _changePaddleX(double x) {
-    _paddle.x = x.clamp(
-      -viewport.size.width / 2 + _paddle.width / 2,
-      viewport.size.width / 2 - _paddle.width / 2,
-    );
-  }
+  void onMouseHover(PointerHoverEvent event) =>
+      _paddle.x = event.localPosition.dx;
 
   @override
   void update(double dt) {}
@@ -56,6 +51,6 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
   @override
   void render(Canvas canvas) {
     canvas.drawColor(const Color(0xFF000000), BlendMode.clear);
-    _paddle.render(canvas, viewport.size);
+    _paddle.render(canvas);
   }
 }
