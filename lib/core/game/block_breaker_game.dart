@@ -50,7 +50,7 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
 
   @override
   void render(Canvas canvas) {
-    canvas.drawColor(const Color(0xFF000000), BlendMode.clear);
+    canvas.drawColor(const Color(0xFF0E1D2F), BlendMode.clear);
     _paddle.render(canvas);
   }
 }
