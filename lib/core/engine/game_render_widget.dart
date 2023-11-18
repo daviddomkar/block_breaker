@@ -28,7 +28,7 @@ class GameRenderWidget extends LeafRenderObjectWidget {
   }
 }
 
-class GameRenderObject extends RenderBox {
+class GameRenderObject extends RenderBox with WidgetsBindingObserver {
   Game _game;
 
   Ticker? _ticker;
@@ -62,6 +62,25 @@ class GameRenderObject extends RenderBox {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (attached) {
+      switch (state) {
+        case AppLifecycleState.resumed:
+          if (_ticker?.isActive == false) {
+            _ticker?.start();
+          }
+          break;
+        case AppLifecycleState.detached:
+        case AppLifecycleState.hidden:
+          _ticker?.stop();
+          _previous = Duration.zero;
+        default:
+          break;
+      }
+    }
+  }
+
+  @override
   bool get sizedByParent => true;
 
   void _attachGame() {
@@ -73,9 +92,13 @@ class GameRenderObject extends RenderBox {
     if (!ticker.isActive) {
       ticker.start();
     }
+
+    _bindLifecycleListener();
   }
 
   void _detachGame() {
+    _unbindLifecycleListener();
+
     _ticker?.dispose();
 
     _ticker = null;
@@ -96,6 +119,14 @@ class GameRenderObject extends RenderBox {
     _game.update(dt);
 
     markNeedsPaint();
+  }
+
+  void _bindLifecycleListener() {
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  void _unbindLifecycleListener() {
+    WidgetsBinding.instance.removeObserver(this);
   }
 
   set game(Game game) {
