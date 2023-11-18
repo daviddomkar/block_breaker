@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/engine/game_render_widget.dart';
+import '../core/engine/widgets/game_widget.dart';
 import '../core/game/block_breaker_game.dart';
 
 class GameScreen extends StatefulWidget {
@@ -14,7 +14,7 @@ class _GameScreenState extends State<GameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GameRenderWidget(
+      body: GameWidget(
         game: BlockBreakerGame(),
       ),
     );

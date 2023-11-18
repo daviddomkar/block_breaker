@@ -2,7 +2,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
-import 'game.dart';
+import '../game.dart';
 
 class GameRenderWidget extends LeafRenderObjectWidget {
   final Game game;
