@@ -69,7 +69,7 @@ class GameRenderObject extends RenderBox with WidgetsBindingObserver {
     context.canvas.save();
     context.canvas.translate(offset.dx, offset.dy);
 
-    final transform = game.viewport.computeViewportTransform();
+    final transform = game.viewport.transform;
 
     context.canvas.save();
     context.canvas.transform(transform.storage);
