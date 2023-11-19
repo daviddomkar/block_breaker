@@ -3,35 +3,32 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 
+import '../../services/asset_manager.dart';
 import '../engine/game.dart';
 import '../engine/mixins/mouse_listener.dart';
 import '../engine/mixins/pointer_listener.dart';
 import '../engine/viewport.dart';
 
 import '../game/entities/paddle.dart';
+import 'entities/board.dart';
 
 class BlockBreakerGame extends Game with MouseListener, PointerListener {
-  final Image _cellTextureImage;
-  final FragmentProgram _gridShaderProgram;
+  final AssetManager _assetManager;
 
   late double _time;
 
   late final FragmentShader _gridShader;
+  late final Board _board;
   late final Paddle _paddle;
 
   BlockBreakerGame({
-    required Image cellTextureImage,
-    required FragmentProgram gridShaderProgram,
-  })  : _cellTextureImage = cellTextureImage,
-        _gridShaderProgram = gridShaderProgram,
+    required AssetManager assetManager,
+  })  : _assetManager = assetManager,
         super(
           viewport: Viewport(
-            size: const Size(
-              480,
-              double.infinity,
-            ),
-            offset: const Offset(-240, 0),
-            flipY: true,
+            minSize: const Size(480, double.infinity),
+            maxSize: const Size(double.infinity, double.infinity),
+            origin: const Offset(-0.5, 0),
           ),
         );
 
@@ -39,11 +36,17 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
   void init() {
     _time = 0;
 
-    _gridShader = _gridShaderProgram.fragmentShader();
-    _gridShader.setImageSampler(0, _cellTextureImage);
+    _gridShader = _assetManager.gridShaderProgram.fragmentShader();
+    _gridShader.setImageSampler(0, _assetManager.boardGridCellImage);
+
+    _board = Board(
+      assetManager: _assetManager,
+      viewport: viewport,
+      size: const Size(480, 800),
+    );
 
     _paddle = Paddle(
-      viewport: viewport,
+      board: _board,
       x: 0,
       width: 128,
     );
@@ -75,6 +78,7 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
 
     canvas.drawPaint(Paint()..shader = _gridShader);
 
+    _board.render(canvas);
     _paddle.render(canvas);
   }
 }

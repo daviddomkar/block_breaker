@@ -21,8 +21,10 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/textures/cell.png
+    - assets/textures/debug_rectangle.png
+    - assets/textures/board_grid_cell.png
+    - assets/textures/board_wall_top.png
 
   shaders:
-    - shaders/bloom.frag
-    - shaders/grid.frag
+    - assets/shaders/bloom.frag
+    - assets/shaders/grid.frag
