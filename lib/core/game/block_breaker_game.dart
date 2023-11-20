@@ -26,7 +26,7 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
   })  : _assetManager = assetManager,
         super(
           viewport: Viewport(
-            minSize: const Size(480, double.infinity),
+            minSize: const Size(480, 960),
             maxSize: const Size(double.infinity, double.infinity),
             origin: const Offset(-0.5, 0),
           ),
@@ -38,6 +38,7 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
 
     _gridShader = _assetManager.gridShaderProgram.fragmentShader();
     _gridShader.setImageSampler(0, _assetManager.boardGridCellImage);
+    _gridShader.setFloat(0, 8);
 
     _board = Board(
       assetManager: _assetManager,
@@ -73,8 +74,7 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
 
   @override
   void render(Canvas canvas) {
-    _gridShader.setFloat(0, viewport.size.width);
-    _gridShader.setFloat(1, viewport.size.height);
+    _gridShader.setFloat(1, viewport.minSize.width);
 
     canvas.drawPaint(Paint()..shader = _gridShader);
 
