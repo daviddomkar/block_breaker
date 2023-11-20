@@ -38,12 +38,27 @@ class Viewport {
 
     _scaledMinSize = Size(size.width / minScale.x, size.height / minScale.y);
 
+    final maxScale = switch (_maxSize) {
+      Size(width: var width, height: var height)
+          when width != double.infinity && height != double.infinity =>
+        Vector2(size.width / width, size.height / height),
+      Size(width: var width, height: var height)
+          when width == double.infinity && height != double.infinity =>
+        Vector2(size.height / height, size.height / height),
+      Size(width: var width, height: var height)
+          when width != double.infinity && height == double.infinity =>
+        Vector2(size.width / width, size.width / width),
+      _ => Vector2.all(1.0),
+    };
+
+    final maxSize = Size(size.width / maxScale.x, size.height / maxScale.y);
+
     final viewportMinAspectRatio = _scaledMinSize.width / _scaledMinSize.height;
-    final viewportMaxAspectRatio = size.width / size.height;
+    final viewportMaxAspectRatio = maxSize.width / maxSize.height;
 
     if (viewportMinAspectRatio > viewportMaxAspectRatio) {
       minScale.y = minScale.x;
-    } else {
+    } else if (viewportMinAspectRatio < viewportMaxAspectRatio) {
       minScale.x = minScale.y;
     }
 

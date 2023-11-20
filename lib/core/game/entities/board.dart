@@ -29,45 +29,41 @@ class Board {
     );
 */
 
-    canvas.save();
-
-    final targetImageRect = Rect.fromLTWH(
-      -_size.width / 2 * 3,
-      0 * 3,
-      _size.width * 3,
-      (_viewport.size.height - _size.height) / 2 * 3,
+    final boardWallTopRect = Rect.fromLTWH(
+      -_size.width / 2,
+      0,
+      _size.width,
+      (_viewport.size.height - _size.height) / 2,
     );
 
-    final imageNineRect = const Rect.fromLTWH(
-      222 * 3,
-      6 * 3,
-      64 * 3,
-      8 * 3,
+    _assetManager.boardWallTopTexture.render(canvas, boardWallTopRect);
+
+    final boardWallBottomRect = Rect.fromLTWH(
+      -_size.width / 2,
+      _viewport.size.height - (_viewport.size.height - _size.height) / 2 + 32,
+      _size.width,
+      (_viewport.size.height - _size.height) / 2 - 32,
     );
 
-    canvas.scale(1 / 3);
+    _assetManager.boardWallBottomTexture.render(canvas, boardWallBottomRect);
 
-    canvas.drawImageNine(
-      _assetManager.boardWallTopImage,
-      imageNineRect,
-      targetImageRect,
-      Paint()
-        ..filterQuality = FilterQuality.high
-        ..isAntiAlias = true,
+    final boardWallLeftRect = Rect.fromLTWH(
+      -_size.width / 2,
+      (_viewport.size.height - _size.height) / 2,
+      32,
+      _viewport.size.height - (_viewport.size.height - _size.height) + 32,
     );
 
-    canvas.restore();
-/*
-    canvas.drawRect(
-      imageNineRect,
-      Paint()..color = const Color(0xFFFF0000),
-    );
-    */
+    _assetManager.boardWallLeftTexture.render(canvas, boardWallLeftRect);
 
-    canvas.drawRect(
-      innerBounds,
-      Paint()..color = const Color(0x44FA6AA6),
+    final boardWallRightRect = Rect.fromLTWH(
+      _size.width / 2 - 32,
+      (_viewport.size.height - _size.height) / 2,
+      32,
+      _viewport.size.height - (_viewport.size.height - _size.height) + 32,
     );
+
+    _assetManager.boardWallRightTexture.render(canvas, boardWallRightRect);
   }
 
   Rect get innerBounds {
@@ -75,7 +71,16 @@ class Board {
       -_size.width / 2 + 32,
       (_viewport.size.height - _size.height) / 2 - 32,
       _size.width - 64,
-      _size.height,
+      _size.height + 64,
+    );
+  }
+
+  Rect get outerBounds {
+    return Rect.fromLTWH(
+      -_size.width / 2,
+      0,
+      _size.width,
+      _size.height + (_viewport.size.height - _size.height),
     );
   }
 }

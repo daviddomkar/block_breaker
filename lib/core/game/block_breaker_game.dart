@@ -80,5 +80,24 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
 
     _board.render(canvas);
     _paddle.render(canvas);
+
+    canvas.saveLayer(null, Paint()..blendMode = BlendMode.multiply);
+
+    canvas.drawRect(
+      Rect.fromLTWH(-viewport.size.width / 2, 0, viewport.size.width,
+          viewport.size.height),
+      Paint()..color = const Color(0xFF666666),
+    );
+
+    canvas.saveLayer(null, Paint()..blendMode = BlendMode.xor);
+
+    canvas.drawRect(
+      _board.outerBounds,
+      Paint(),
+    );
+
+    canvas.restore();
+
+    canvas.restore();
   }
 }
