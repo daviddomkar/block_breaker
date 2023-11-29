@@ -47,6 +47,10 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Image downsample(Image image, Size size, int level) {
+    if (level == 0) {
+      return image;
+    }
+
     _bloomDownsampleShader
       ..setFloat(0, size.width)
       ..setFloat(1, size.height)
@@ -55,25 +59,23 @@ class _GameScreenState extends State<GameScreen> {
     final downsampleRecorder = PictureRecorder();
     final downsampleCanvas = Canvas(downsampleRecorder);
 
+    downsampleCanvas.scale(0.5);
     downsampleCanvas.drawRect(
       Offset.zero & size,
-      Paint()..shader = _bloomDownsampleShader,
+      Paint()
+        ..shader = _bloomDownsampleShader
+        ..filterQuality = FilterQuality.low,
     );
 
     final downsamplePicture = downsampleRecorder.endRecording();
 
     final downsampledImage = downsamplePicture.toImageSync(
-      size.width.round(),
-      size.height.round(),
+      size.width.round() ~/ 2,
+      size.height.round() ~/ 2,
     );
 
-    if (level > 0) {
-      final image = downsample(downsampledImage, size, level - 1);
-      downsampledImage.dispose();
-      return image;
-    } else {
-      return downsampledImage;
-    }
+    image.dispose();
+    return downsample(downsampledImage, size / 2, level - 1);
   }
 
   @override
@@ -83,12 +85,17 @@ class _GameScreenState extends State<GameScreen> {
         children: [
           AnimatedSampler(
             (image, size, canvas) {
-              final downsampledImage = downsample(image, size, 8);
+              final downsampledImage = downsample(image.clone(), size, 0);
 
-              canvas.drawImage(
+              canvas.drawImageRect(
                 downsampledImage,
-                Offset.zero,
-                Paint(),
+                Offset.zero &
+                    Size(
+                      downsampledImage.width.toDouble(),
+                      downsampledImage.height.toDouble(),
+                    ),
+                Offset.zero & size,
+                Paint()..filterQuality = FilterQuality.low,
               );
 
               downsampledImage.dispose();
