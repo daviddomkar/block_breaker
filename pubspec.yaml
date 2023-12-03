@@ -30,6 +30,5 @@ flutter:
     - assets/textures/board_wall_right.png
 
   shaders:
-    - assets/shaders/bloom_downsample.frag
-    - assets/shaders/bloom_upsample.frag
+    - assets/shaders/luma.frag
     - assets/shaders/grid.frag

@@ -16,8 +16,7 @@ class AssetManager {
   final NinePatchTexture boardWallRightTexture;
 
   // Shaders
-  final FragmentProgram bloomDownsampleShaderProgram;
-  final FragmentProgram bloomUpsampleShaderProgram;
+  final FragmentProgram lumaShaderProgram;
   final FragmentProgram gridShaderProgram;
 
   AssetManager._(
@@ -27,8 +26,7 @@ class AssetManager {
     this.boardWallBottomTexture,
     this.boardWallLeftTexture,
     this.boardWallRightTexture,
-    this.bloomDownsampleShaderProgram,
-    this.bloomUpsampleShaderProgram,
+    this.lumaShaderProgram,
     this.gridShaderProgram,
   );
 
@@ -90,12 +88,8 @@ class AssetManager {
       scale: 3,
     );
 
-    final bloomDownsampleShaderProgram = await FragmentProgram.fromAsset(
-      'assets/shaders/bloom_downsample.frag',
-    );
-
-    final bloomUpsampleShaderProgram = await FragmentProgram.fromAsset(
-      'assets/shaders/bloom_upsample.frag',
+    final lumaShaderProgram = await FragmentProgram.fromAsset(
+      'assets/shaders/luma.frag',
     );
 
     final gridShaderProgram = await FragmentProgram.fromAsset(
@@ -109,8 +103,7 @@ class AssetManager {
       boardWallBottomTexture,
       boardWallLeftTexture,
       boardWallRightTexture,
-      bloomDownsampleShaderProgram,
-      bloomUpsampleShaderProgram,
+      lumaShaderProgram,
       gridShaderProgram,
     );
   }

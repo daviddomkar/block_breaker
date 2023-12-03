@@ -21,8 +21,7 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   late final BlockBreakerGame _game;
-  late final FragmentShader _bloomDownsampleShader;
-  late final FragmentShader _bloomUpsampleShader;
+  late final FragmentShader _lumaShader;
 
   @override
   void initState() {
@@ -32,50 +31,13 @@ class _GameScreenState extends State<GameScreen> {
       assetManager: widget.assetManager,
     );
 
-    _bloomDownsampleShader =
-        widget.assetManager.bloomDownsampleShaderProgram.fragmentShader();
-
-    _bloomUpsampleShader =
-        widget.assetManager.bloomUpsampleShaderProgram.fragmentShader();
+    _lumaShader = widget.assetManager.lumaShaderProgram.fragmentShader();
   }
 
   @override
   void dispose() {
-    _bloomUpsampleShader.dispose();
-    _bloomDownsampleShader.dispose();
+    _lumaShader.dispose();
     super.dispose();
-  }
-
-  Image downsample(Image image, Size size, int level) {
-    if (level == 0) {
-      return image;
-    }
-
-    _bloomDownsampleShader
-      ..setFloat(0, size.width)
-      ..setFloat(1, size.height)
-      ..setImageSampler(0, image);
-
-    final downsampleRecorder = PictureRecorder();
-    final downsampleCanvas = Canvas(downsampleRecorder);
-
-    downsampleCanvas.scale(0.5);
-    downsampleCanvas.drawRect(
-      Offset.zero & size,
-      Paint()
-        ..shader = _bloomDownsampleShader
-        ..filterQuality = FilterQuality.low,
-    );
-
-    final downsamplePicture = downsampleRecorder.endRecording();
-
-    final downsampledImage = downsamplePicture.toImageSync(
-      size.width.round() ~/ 2,
-      size.height.round() ~/ 2,
-    );
-
-    image.dispose();
-    return downsample(downsampledImage, size / 2, level - 1);
   }
 
   @override
@@ -85,20 +47,28 @@ class _GameScreenState extends State<GameScreen> {
         children: [
           AnimatedSampler(
             (image, size, canvas) {
-              final downsampledImage = downsample(image.clone(), size, 0);
+              _lumaShader
+                ..setFloat(0, 0.5)
+                ..setFloat(1, 1.5)
+                ..setFloat(2, size.width)
+                ..setFloat(3, size.height)
+                ..setImageSampler(0, image);
 
-              canvas.drawImageRect(
-                downsampledImage,
-                Offset.zero &
-                    Size(
-                      downsampledImage.width.toDouble(),
-                      downsampledImage.height.toDouble(),
-                    ),
-                Offset.zero & size,
-                Paint()..filterQuality = FilterQuality.low,
+              canvas.drawImage(image, Offset.zero, Paint());
+
+              canvas.saveLayer(
+                null,
+                Paint()
+                  ..blendMode = BlendMode.plus
+                  ..imageFilter = ImageFilter.blur(sigmaX: 20, sigmaY: 20),
               );
 
-              downsampledImage.dispose();
+              canvas.drawRect(
+                Offset.zero & size,
+                Paint()..shader = _lumaShader,
+              );
+
+              canvas.restore();
             },
             child: GameWidget(
               game: _game,
