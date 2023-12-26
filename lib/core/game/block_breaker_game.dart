@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 
+import '../../constants.dart';
 import '../../services/asset_manager.dart';
 import '../engine/game.dart';
 import '../engine/mixins/mouse_listener.dart';
@@ -26,7 +27,7 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
   })  : _assetManager = assetManager,
         super(
           viewport: Viewport(
-            minSize: const Size(480, 960),
+            minSize: kViewportSize,
             maxSize: const Size(double.infinity, double.infinity),
             origin: const Offset(-0.5, 0),
           ),
@@ -43,7 +44,7 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
     _board = Board(
       assetManager: _assetManager,
       viewport: viewport,
-      size: const Size(480, 800),
+      size: kBoardSize,
     );
 
     _paddle = Paddle(

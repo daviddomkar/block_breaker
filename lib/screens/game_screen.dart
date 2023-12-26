@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart' hide Image;
 import 'package:flutter_shaders/flutter_shaders.dart';
 
+import '../constants.dart';
 import '../core/engine/widgets/game_widget.dart';
 import '../core/game/block_breaker_game.dart';
 import '../services/asset_manager.dart';
@@ -72,6 +73,24 @@ class _GameScreenState extends State<GameScreen> {
             },
             child: GameWidget(
               game: _game,
+            ),
+          ),
+          SizedBox.fromSize(
+            size: MediaQuery.sizeOf(context),
+            child: FittedBox(
+              child: SizedBox.fromSize(
+                size: kViewportSize,
+                child: Center(
+                  child: SizedBox.fromSize(
+                    size: Size(kBoardSize.width - 64, kBoardSize.height + 64),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ),
         ],
