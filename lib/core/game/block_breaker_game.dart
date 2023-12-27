@@ -11,16 +11,21 @@ import '../engine/mixins/pointer_listener.dart';
 import '../engine/viewport.dart';
 
 import '../game/entities/paddle.dart';
+import 'entities/ball.dart';
+import 'entities/block.dart';
+import 'game_state.dart';
 import 'entities/board.dart';
 
 class BlockBreakerGame extends Game with MouseListener, PointerListener {
   final AssetManager _assetManager;
 
+  late GameState _state;
   late double _time;
 
   late final FragmentShader _gridShader;
   late final Board _board;
   late final Paddle _paddle;
+  late final Ball _ball;
 
   BlockBreakerGame({
     required AssetManager assetManager,
@@ -35,6 +40,7 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
 
   @override
   void init() {
+    _state = GameState.notStarted;
     _time = 0;
 
     _gridShader = _assetManager.gridShaderProgram.fragmentShader();
@@ -48,9 +54,21 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
     );
 
     _paddle = Paddle(
+      assetManager: _assetManager,
       board: _board,
       x: 0,
-      width: 128,
+      width: 96,
+    );
+
+    _ball = Ball(
+      board: _board,
+      radius: kBallRadius,
+      speed: 256,
+      x: 0,
+      y: _board.innerBounds.bottom -
+          kPaddleBottomOffset -
+          kPaddleHeight / 2 -
+          kBallRadius,
     );
   }
 
@@ -60,12 +78,10 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
   }
 
   @override
-  void onPointerMove(PointerMoveEvent event) =>
-      _paddle.x = event.localPosition.dx;
+  void onPointerMove(PointerMoveEvent event) => _processInput(event);
 
   @override
-  void onMouseHover(PointerHoverEvent event) =>
-      _paddle.x = event.localPosition.dx;
+  void onMouseHover(PointerHoverEvent event) => _processInput(event);
 
   @override
   void update(double dt) {
@@ -81,12 +97,34 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
 
     _board.render(canvas);
     _paddle.render(canvas);
+    _ball.render(canvas);
+
+    const columnCount = 5;
+
+    for (int i = 0; i < BlockType.values.length * 5; i++) {
+      for (int j = 0; j < columnCount; j++) {
+        Block(
+          assetManager: _assetManager,
+          type: BlockType.values[i % BlockType.values.length],
+          x: (columnCount.isEven ? kBlockSize.width / 2 : 0) +
+              kBlockSize.width * (j - (columnCount ~/ 2)),
+          y: _board.innerBounds.top +
+              kBlockSize.height / 2 +
+              32 +
+              kBlockSize.height * i,
+        ).render(canvas);
+      }
+    }
 
     canvas.saveLayer(null, Paint()..blendMode = BlendMode.multiply);
 
     canvas.drawRect(
-      Rect.fromLTWH(-viewport.size.width / 2, 0, viewport.size.width,
-          viewport.size.height),
+      Rect.fromLTWH(
+        -viewport.size.width / 2,
+        0,
+        viewport.size.width,
+        viewport.size.height,
+      ),
       Paint()..color = const Color(0xFF666666),
     );
 
@@ -100,5 +138,13 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
     canvas.restore();
 
     canvas.restore();
+  }
+
+  void _processInput(PointerEvent event) {
+    if (_state case GameState.ready || GameState.playing) {
+      _paddle.x += event.localDelta.dx;
+    }
+
+    if (_state == GameState.ready) {}
   }
 }

@@ -22,12 +22,17 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/textures/debug_rectangle.png
     - assets/textures/board_grid_cell.png
     - assets/textures/board_wall_top.png
     - assets/textures/board_wall_bottom.png
     - assets/textures/board_wall_left.png
     - assets/textures/board_wall_right.png
+    - assets/textures/paddle.png
+    - assets/textures/block_grey.png
+    - assets/textures/block_blue.png
+    - assets/textures/block_purple.png
+    - assets/textures/block_pink.png
+    - assets/textures/block_golden.png
 
   shaders:
     - assets/shaders/luma.frag

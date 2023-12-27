@@ -1,21 +1,23 @@
 import 'dart:ui';
 
+import '../../../constants.dart';
+import '../../../services/asset_manager.dart';
 import 'board.dart';
 
-const _kPaddleHeight = 32.0;
-const _kPaddleBottomOffset = 64.0;
-
 class Paddle {
+  final AssetManager _assetManager;
   final Board _board;
 
   double _x;
   final double _width;
 
   Paddle({
+    required AssetManager assetManager,
     required Board board,
     required double x,
     required double width,
-  })  : _board = board,
+  })  : _assetManager = assetManager,
+        _board = board,
         _x = x,
         _width = width;
 
@@ -26,15 +28,17 @@ class Paddle {
     );
   }
 
+  double get x => _x;
+
   void render(Canvas canvas) {
-    canvas.drawRect(
+    _assetManager.paddleTexture.render(
+      canvas,
       Rect.fromLTWH(
         -_width / 2 + _x,
-        -_kPaddleHeight / 2 + _board.innerBounds.bottom - _kPaddleBottomOffset,
+        -kPaddleHeight / 2 + _board.innerBounds.bottom - kPaddleBottomOffset,
         _width,
-        _kPaddleHeight,
+        kPaddleHeight,
       ),
-      Paint()..color = const Color(0xFFFA6AA6),
     );
   }
 }

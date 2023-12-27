@@ -75,17 +75,25 @@ class _GameScreenState extends State<GameScreen> {
               game: _game,
             ),
           ),
-          SizedBox.fromSize(
-            size: MediaQuery.sizeOf(context),
-            child: FittedBox(
-              child: SizedBox.fromSize(
-                size: kViewportSize,
-                child: Center(
-                  child: SizedBox.fromSize(
-                    size: Size(kBoardSize.width - 64, kBoardSize.height + 64),
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
+          IgnorePointer(
+            child: SizedBox.fromSize(
+              size: MediaQuery.sizeOf(context),
+              child: FittedBox(
+                child: SizedBox.fromSize(
+                  size: kViewportSize,
+                  child: Center(
+                    child: SizedBox.fromSize(
+                      size: Size(kBoardSize.width, kBoardSize.height),
+                      child: const Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Score: 1215'),
+                              Text('Lives: 3'),
+                            ],
+                          )
+                        ],
                       ),
                     ),
                   ),

@@ -7,7 +7,6 @@ import '../core/engine/nine_patch_texture.dart';
 
 class AssetManager {
   // Textures
-  final Image debugRectangleImage;
   final Image boardGridCellImage;
 
   final NinePatchTexture boardWallTopTexture;
@@ -15,17 +14,30 @@ class AssetManager {
   final NinePatchTexture boardWallLeftTexture;
   final NinePatchTexture boardWallRightTexture;
 
+  final NinePatchTexture paddleTexture;
+
+  final NinePatchTexture blockGreyTexture;
+  final NinePatchTexture blockBlueTexture;
+  final NinePatchTexture blockPurpleTexture;
+  final NinePatchTexture blockPinkTexture;
+  final NinePatchTexture blockGoldenTexture;
+
   // Shaders
   final FragmentProgram lumaShaderProgram;
   final FragmentProgram gridShaderProgram;
 
   AssetManager._(
-    this.debugRectangleImage,
     this.boardGridCellImage,
     this.boardWallTopTexture,
     this.boardWallBottomTexture,
     this.boardWallLeftTexture,
     this.boardWallRightTexture,
+    this.paddleTexture,
+    this.blockGreyTexture,
+    this.blockBlueTexture,
+    this.blockPurpleTexture,
+    this.blockPinkTexture,
+    this.blockGoldenTexture,
     this.lumaShaderProgram,
     this.gridShaderProgram,
   );
@@ -36,10 +48,6 @@ class AssetManager {
   }
 
   static Future<AssetManager> load() async {
-    final debugRectangleImage = await loadImage(
-      'assets/textures/debug_rectangle.png',
-    );
-
     final boardGridCellImage = await loadImage(
       'assets/textures/board_grid_cell.png',
     );
@@ -88,6 +96,54 @@ class AssetManager {
       scale: 3,
     );
 
+    final paddleTexture = await NinePatchTexture.load(
+      'assets/textures/paddle.png',
+      center: const Rect.fromLTWH(
+        20 * 3,
+        8 * 3,
+        56 * 3,
+        8 * 3,
+      ),
+      scale: 3,
+    );
+
+    const blockCenterRect = Rect.fromLTWH(
+      4 * 3,
+      8 * 3,
+      56 * 3,
+      12 * 3,
+    );
+
+    final blockGreyTexture = await NinePatchTexture.load(
+      'assets/textures/block_grey.png',
+      center: blockCenterRect,
+      scale: 3,
+    );
+
+    final blockBlueTexture = await NinePatchTexture.load(
+      'assets/textures/block_blue.png',
+      center: blockCenterRect,
+      scale: 3,
+    );
+
+    final blockPurpleTexture = await NinePatchTexture.load(
+      'assets/textures/block_purple.png',
+      center: blockCenterRect,
+      scale: 3,
+    );
+
+    final blockPinkTexture = await NinePatchTexture.load(
+      'assets/textures/block_pink.png',
+      center: blockCenterRect,
+      scale: 3,
+    );
+
+    final blockGoldenTexture = await NinePatchTexture.load(
+      'assets/textures/block_golden.png',
+      center: blockCenterRect,
+      scale: 3,
+    );
+
     final lumaShaderProgram = await FragmentProgram.fromAsset(
       'assets/shaders/luma.frag',
     );
@@ -97,12 +153,17 @@ class AssetManager {
     );
 
     return AssetManager._(
-      debugRectangleImage,
       boardGridCellImage,
       boardWallTopTexture,
       boardWallBottomTexture,
       boardWallLeftTexture,
       boardWallRightTexture,
+      paddleTexture,
+      blockGreyTexture,
+      blockBlueTexture,
+      blockPurpleTexture,
+      blockPinkTexture,
+      blockGoldenTexture,
       lumaShaderProgram,
       gridShaderProgram,
     );
