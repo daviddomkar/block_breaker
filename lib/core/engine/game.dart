@@ -1,8 +1,10 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
+
 import 'viewport.dart';
 
-abstract class Game {
+abstract class Game extends ChangeNotifier {
   final Viewport _viewport;
 
   Game({
@@ -10,7 +12,12 @@ abstract class Game {
   }) : _viewport = viewport;
 
   void init() {}
-  void dispose() {}
+  @mustCallSuper
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   void update(double dt) {}
   void render(Canvas canvas) {}
 

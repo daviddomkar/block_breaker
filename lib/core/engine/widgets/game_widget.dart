@@ -20,7 +20,15 @@ class GameWidget extends StatelessWidget {
           );
         }
       },
+      onPointerUp: (event) {
+        if (game is PointerListener) {
+          (game as PointerListener).onPointerUp(
+            event.transformed(Matrix4.inverted(game.viewport.transform)),
+          );
+        }
+      },
       child: MouseRegion(
+        cursor: SystemMouseCursors.none,
         onHover: (event) {
           if (game is MouseListener) {
             (game as MouseListener).onMouseHover(
