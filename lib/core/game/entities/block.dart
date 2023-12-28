@@ -7,6 +7,7 @@ import '../../../services/asset_manager.dart';
 import '../../engine/nine_patch_texture.dart';
 
 enum BlockType {
+  grey,
   blue,
   purple,
   pink,
@@ -60,16 +61,22 @@ class Block {
     );
   }
 
-  void destroy() {
+  int destroy() {
     switch (_type) {
+      case BlockType.grey:
+        return 0;
       case BlockType.blue:
         _onDestroy(this);
+        return 1;
       case BlockType.purple:
         _type = BlockType.blue;
+        return 2;
       case BlockType.pink:
         _type = BlockType.purple;
+        return 3;
       case BlockType.golden:
         _type = BlockType.pink;
+        return 4;
     }
   }
 
@@ -77,8 +84,12 @@ class Block {
     _body.world.destroyBody(_body);
   }
 
+  BlockType get type => _type;
+
   NinePatchTexture get _texture {
     switch (_type) {
+      case BlockType.grey:
+        return _assetManager.blockGreyTexture;
       case BlockType.blue:
         return _assetManager.blockBlueTexture;
       case BlockType.purple:

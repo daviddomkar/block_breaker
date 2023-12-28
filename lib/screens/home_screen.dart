@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'game_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -9,14 +8,8 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: ElevatedButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const GameScreen(),
-            ),
-          );
-        },
-        child: const Text('Start Game'),
+        onPressed: () => context.push('/level'),
+        child: const Text('Play'),
       ),
     );
   }

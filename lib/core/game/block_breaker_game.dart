@@ -16,6 +16,7 @@ import 'entities/ball.dart';
 import 'entities/block.dart';
 import 'game_state.dart';
 import 'entities/board.dart';
+import 'level.dart';
 
 class BlockBreakerGame extends Game with MouseListener, PointerListener {
   final AssetManager _assetManager;
@@ -23,9 +24,10 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
   final List<Block> _blocks;
   final List<Block> _blocksToDispose;
 
-  late GameState _state;
-  late double _time;
-  late int _lives;
+  GameState _state;
+  double _time;
+  int _lives;
+  int _score;
 
   late final FragmentShader _gridShader;
   late final Board _board;
@@ -41,6 +43,7 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
         _state = GameState.notStarted,
         _time = 0,
         _lives = 3,
+        _score = 0,
         super(
           viewport: Viewport(
             minSize: kViewportSize,
@@ -75,28 +78,12 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
           kBallRadius,
     );
 
-    const columnCount = 5;
-
-    for (int i = 0; i < BlockType.values.length * 5; i++) {
-      for (int j = 0; j < columnCount; j++) {
-        final block = Block(
-          assetManager: _assetManager,
-          onDestroy: _scheduleBlockDisposal,
-          world: _world,
-          type: BlockType.values[i % BlockType.values.length],
-          x: (columnCount.isEven ? kBlockSize.width / 2 : 0) +
-              kBlockSize.width * (j - (columnCount ~/ 2)),
-          y: _board.innerBounds.top +
-              kBlockSize.height / 2 +
-              32 +
-              kBlockSize.height * i,
-        );
-
-        _blocks.add(block);
-      }
-    }
-
-    _world.contactManager.contactListener = BlockBreakerContactListener();
+    _world.contactManager.contactListener = BlockBreakerContactListener(
+      onBlockDestroyed: (score) {
+        _score += score;
+        notifyListeners();
+      },
+    );
   }
 
   @override
@@ -108,8 +95,18 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
 
   @override
   void dispose() {
-    super.dispose();
     _gridShader.dispose();
+
+    for (var block in _blocks) {
+      _scheduleBlockDisposal(block);
+    }
+
+    for (var block in _blocksToDispose) {
+      _blocks.remove(block);
+      block.dispose();
+    }
+
+    super.dispose();
   }
 
   @override
@@ -136,10 +133,12 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
       block.dispose();
     }
 
-    _world.stepDt(dt);
+    if (_state != GameState.paused) {
+      _world.stepDt(dt);
+    }
 
     if (_state == GameState.playing) {
-      if (_blocks.isEmpty) {
+      if (_blocks.every((block) => block.type == BlockType.grey)) {
         _won();
       } else if (_ball.y - kBallRadius > _board.innerBounds.bottom) {
         if (_lives > 0) {
@@ -189,7 +188,88 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
     canvas.restore();
   }
 
+  void loadLevel(Level level) {
+    for (var block in _blocks) {
+      _scheduleBlockDisposal(block);
+    }
+
+    for (var block in _blocksToDispose) {
+      _blocks.remove(block);
+      block.dispose();
+    }
+
+    for (int i = 0; i < level.height; i++) {
+      for (int j = 0; j < level.width; j++) {
+        if (level.data[i][j] == E) {
+          continue;
+        }
+
+        final block = Block(
+          assetManager: _assetManager,
+          onDestroy: _scheduleBlockDisposal,
+          world: _world,
+          type: BlockType.values[level.data[i][j]],
+          x: (level.width.isEven ? kBlockSize.width / 2 : 0) +
+              kBlockSize.width * (j - (level.width ~/ 2)),
+          y: _board.innerBounds.top +
+              kBlockSize.height / 2 +
+              40 +
+              kBlockSize.height * i,
+        );
+
+        _blocks.add(block);
+      }
+    }
+  }
+
+  void startLevel([notify = true]) {
+    _state = GameState.ready;
+    _lives = 3;
+    _score = 0;
+
+    _resetEntityPositions();
+
+    if (notify) {
+      notifyListeners();
+    }
+  }
+
+  @override
+  void notifyListeners() {
+    super.notifyListeners();
+  }
+
+  void pause() {
+    if (_state != GameState.playing) {
+      return;
+    }
+
+    _state = GameState.paused;
+    notifyListeners();
+  }
+
+  void resume() {
+    if (_state != GameState.paused) {
+      return;
+    }
+
+    _state = GameState.playing;
+    notifyListeners();
+  }
+
+  void reset() {
+    for (var block in _blocks) {
+      _scheduleBlockDisposal(block);
+    }
+
+    _resetEntityPositions();
+
+    _state = GameState.notStarted;
+  }
+
   GameState get state => _state;
+  int get lives => _lives;
+  int get score => _score;
 
   void _processMoveInput(PointerEvent event) {
     if (_state case GameState.ready || GameState.playing) {
@@ -208,13 +288,7 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
   void _won() {
     _state = GameState.won;
 
-    _ball.x = 0;
-    _ball.y = _board.innerBounds.bottom -
-        kPaddleBottomOffset -
-        kPaddleHeight -
-        kBallRadius;
-
-    _paddle.x = 0;
+    _resetEntityPositions();
 
     notifyListeners();
   }
@@ -223,13 +297,7 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
     _lives--;
     _state = GameState.ready;
 
-    _ball.x = 0;
-    _ball.y = _board.innerBounds.bottom -
-        kPaddleBottomOffset -
-        kPaddleHeight -
-        kBallRadius;
-
-    _paddle.x = 0;
+    _resetEntityPositions();
 
     notifyListeners();
   }
@@ -237,6 +305,12 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
   void _gameOver() {
     _state = GameState.gameOver;
 
+    _resetEntityPositions();
+
+    notifyListeners();
+  }
+
+  void _resetEntityPositions() {
     _ball.x = 0;
     _ball.y = _board.innerBounds.bottom -
         kPaddleBottomOffset -
@@ -244,12 +318,16 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
         kBallRadius;
 
     _paddle.x = 0;
-
-    notifyListeners();
   }
 }
 
 class BlockBreakerContactListener extends ContactListener {
+  final void Function(int) _onBlockDestroyed;
+
+  BlockBreakerContactListener({
+    required void Function(int) onBlockDestroyed,
+  }) : _onBlockDestroyed = onBlockDestroyed;
+
   @override
   void endContact(Contact contact) {
     super.endContact(contact);
@@ -258,9 +336,9 @@ class BlockBreakerContactListener extends ContactListener {
     final userDataB = contact.fixtureB.body.userData;
 
     if (userDataA is Ball && userDataB is Block) {
-      userDataB.destroy();
+      _onBlockDestroyed(userDataB.destroy());
     } else if (userDataA is Block && userDataB is Ball) {
-      userDataA.destroy();
+      _onBlockDestroyed(userDataA.destroy());
     }
   }
 }
