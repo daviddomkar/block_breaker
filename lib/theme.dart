@@ -13,6 +13,10 @@ ThemeData buildTheme() {
         displayMedium: baseTheme.textTheme.displayMedium?.copyWith(
           fontWeight: FontWeight.bold,
         ),
+        displaySmall: baseTheme.textTheme.displayMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+          fontSize: 32,
+        ),
         bodyLarge: baseTheme.textTheme.bodyLarge?.copyWith(
           fontWeight: FontWeight.bold,
         ),

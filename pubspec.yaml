@@ -25,6 +25,8 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/images/block_button.png
+
     - assets/fonts/OFL.txt
     - assets/fonts/Silkscreen-Bold.ttf
     - assets/fonts/Silkscreen-Regular.ttf

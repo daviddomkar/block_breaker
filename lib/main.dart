@@ -48,6 +48,8 @@ class BlockBreakerApp extends StatefulWidget {
 }
 
 class _BlockBreakerAppState extends State<BlockBreakerApp> {
+  late final RouteObserver<ModalRoute<void>> _routeObserver;
+
   late final BlockBreakerGame _game;
   late final FragmentShader _lumaShader;
 
@@ -56,6 +58,8 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
   @override
   void initState() {
     super.initState();
+
+    _routeObserver = RouteObserver();
 
     _game = BlockBreakerGame(
       assetManager: widget.assetManager,
@@ -76,20 +80,27 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
         GoRoute(
           path: '/level-selection',
           pageBuilder: (context, state) {
-            return const NoTransitionPage(
-              child: LevelSelectionScreen(),
+            return NoTransitionPage(
+              child: LevelSelectionScreen(
+                routeObserver: _routeObserver,
+                game: _game,
+              ),
             );
           },
         ),
         GoRoute(
-          path: '/level',
+          path: '/level/:index',
           pageBuilder: (context, state) {
             return NoTransitionPage(
-              child: LevelScreen(game: _game),
+              child: LevelScreen(
+                game: _game,
+                levelIndex: int.parse(state.pathParameters['index']!) - 1,
+              ),
             );
           },
         ),
       ],
+      observers: [_routeObserver],
     );
   }
 

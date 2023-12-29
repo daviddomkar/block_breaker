@@ -29,6 +29,8 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
   int _lives;
   int _score;
 
+  GameState? _stateBeforePause;
+
   late final FragmentShader _gridShader;
   late final Board _board;
   late final Paddle _paddle;
@@ -213,7 +215,7 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
               kBlockSize.width * (j - (level.width ~/ 2)),
           y: _board.innerBounds.top +
               kBlockSize.height / 2 +
-              40 +
+              64 +
               kBlockSize.height * i,
         );
 
@@ -240,10 +242,11 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
   }
 
   void pause() {
-    if (_state != GameState.playing) {
+    if (_state != GameState.playing && _state != GameState.ready) {
       return;
     }
 
+    _stateBeforePause = _state;
     _state = GameState.paused;
     notifyListeners();
   }
@@ -253,18 +256,34 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
       return;
     }
 
-    _state = GameState.playing;
+    if (_stateBeforePause == null) {
+      throw StateError('Cannot resume game without a previous state');
+    }
+
+    _state = _stateBeforePause!;
     notifyListeners();
   }
 
-  void reset() {
+  void reset([notify = true]) {
     for (var block in _blocks) {
       _scheduleBlockDisposal(block);
+    }
+
+    for (var block in _blocksToDispose) {
+      _blocks.remove(block);
+      block.dispose();
     }
 
     _resetEntityPositions();
 
     _state = GameState.notStarted;
+    _stateBeforePause = null;
+    _lives = 3;
+    _score = 0;
+
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   GameState get state => _state;

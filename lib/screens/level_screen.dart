@@ -8,11 +8,13 @@ import '../core/game/block_breaker_game.dart';
 import '../core/game/game_state.dart';
 import '../core/game/level.dart';
 import '../theme.dart';
+import '../widgets/block_button.dart';
 
 class LevelScreen extends StatefulWidget {
   final BlockBreakerGame game;
+  final int levelIndex;
 
-  const LevelScreen({super.key, required this.game});
+  const LevelScreen({super.key, required this.game, required this.levelIndex});
 
   @override
   State<LevelScreen> createState() => _LevelScreenState();
@@ -29,9 +31,11 @@ class _LevelScreenState extends State<LevelScreen> {
 
     _focusNode = FocusNode();
 
-    _game.loadLevel(levels.last);
+    _game.loadLevel(levels[widget.levelIndex]);
     _game.startLevel(false);
 
+    // This needs to be called after the first frame to ensure that the
+    // IgnorePointer widget locks the pointer.
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _game.notifyListeners();
     });
@@ -39,10 +43,7 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   void dispose() {
-    _game.reset();
-
     _focusNode.dispose();
-
     super.dispose();
   }
 
@@ -69,16 +70,20 @@ class _LevelScreenState extends State<LevelScreen> {
             if (_game.state case GameState.ready || GameState.playing) {
               return Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Stack(
                     children: [
-                      Text(
-                        'Score: ${_game.score}',
-                        style: context.textTheme.bodyLarge,
-                      ),
-                      Text(
-                        'Lives: ${widget.game.lives}',
-                        style: context.textTheme.bodyLarge,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Score: ${_game.score}',
+                            style: context.textTheme.bodyLarge,
+                          ),
+                          Text(
+                            'Lives: ${widget.game.lives}',
+                            style: context.textTheme.bodyLarge,
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -100,25 +105,28 @@ class _LevelScreenState extends State<LevelScreen> {
                     style: context.textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
+                  BlockButton(
                     onPressed: () {
                       _game.resume();
                     },
-                    child: const Text('Resume'),
+                    child: Text(
+                      'Resume',
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.titleLarge,
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
+                  BlockButton(
                     onPressed: () {
                       context.pop();
                     },
-                    child: const Text('Exit'),
+                    child: Text(
+                      'Exit',
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.titleLarge,
+                    ),
                   ),
-                  const SizedBox(
-                    height: kPaddleBottomOffset +
-                        kPaddleHeight +
-                        kBallRadius * 2 +
-                        20,
-                  )
+                  const SizedBox(height: kSafeBottomOffset),
                 ],
               );
             }
@@ -137,26 +145,30 @@ class _LevelScreenState extends State<LevelScreen> {
                     style: context.textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
+                  BlockButton(
                     onPressed: () {
-                      _game.loadLevel(levels.last);
-                      _game.startLevel();
+                      context.pushReplacement(
+                        '/level/${widget.levelIndex + 2}',
+                      );
                     },
-                    child: const Text('Play Again'),
+                    child: Text(
+                      'Next Level',
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.titleLarge,
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
+                  BlockButton(
                     onPressed: () {
                       context.pop();
                     },
-                    child: const Text('Exit'),
+                    child: Text(
+                      'Exit',
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.titleLarge,
+                    ),
                   ),
-                  const SizedBox(
-                    height: kPaddleBottomOffset +
-                        kPaddleHeight +
-                        kBallRadius * 2 +
-                        20,
-                  )
+                  const SizedBox(height: kSafeBottomOffset),
                 ],
               );
             }
@@ -175,31 +187,34 @@ class _LevelScreenState extends State<LevelScreen> {
                     style: context.textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
+                  BlockButton(
                     onPressed: () {
-                      _game.loadLevel(levels.last);
+                      _game.loadLevel(levels[widget.levelIndex]);
                       _game.startLevel();
                     },
-                    child: const Text('Try Again'),
+                    child: Text(
+                      'Try Again',
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.titleLarge,
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
+                  BlockButton(
                     onPressed: () {
                       context.pop();
                     },
-                    child: const Text('Exit'),
+                    child: Text(
+                      'Exit',
+                      textAlign: TextAlign.center,
+                      style: context.textTheme.titleLarge,
+                    ),
                   ),
-                  const SizedBox(
-                    height: kPaddleBottomOffset +
-                        kPaddleHeight +
-                        kBallRadius * 2 +
-                        20,
-                  )
+                  const SizedBox(height: kSafeBottomOffset),
                 ],
               );
             }
 
-            throw 'Unhandled game state on level screen: ${_game.state}';
+            return throw 'Invalid game state: ${_game.state}';
           },
         ),
       ),
