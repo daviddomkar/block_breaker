@@ -147,7 +147,8 @@ class _LevelScreenState extends State<LevelScreen> {
                   const SizedBox(height: 16),
                   BlockButton(
                     onPressed: () {
-                      context.pushReplacement(
+                      context.pop();
+                      context.push(
                         '/level/${widget.levelIndex + 2}',
                       );
                     },

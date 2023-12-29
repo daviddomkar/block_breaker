@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../game.dart';
-import '../mixins/mouse_listener.dart';
 import '../mixins/pointer_listener.dart';
 import 'game_render_widget.dart';
 
@@ -27,15 +26,15 @@ class GameWidget extends StatelessWidget {
           );
         }
       },
+      onPointerHover: (event) {
+        if (game is PointerListener) {
+          (game as PointerListener).onPointerHover(
+            event.transformed(Matrix4.inverted(game.viewport.transform)),
+          );
+        }
+      },
       child: MouseRegion(
         cursor: SystemMouseCursors.none,
-        onHover: (event) {
-          if (game is MouseListener) {
-            (game as MouseListener).onMouseHover(
-              event.transformed(Matrix4.inverted(game.viewport.transform)),
-            );
-          }
-        },
         child: GameRenderWidget(game: game),
       ),
     );

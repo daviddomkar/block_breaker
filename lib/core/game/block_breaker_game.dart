@@ -7,7 +7,6 @@ import 'package:forge2d/forge2d.dart';
 import '../../constants.dart';
 import '../../services/asset_manager.dart';
 import '../engine/game.dart';
-import '../engine/mixins/mouse_listener.dart';
 import '../engine/mixins/pointer_listener.dart';
 import '../engine/viewport.dart';
 
@@ -18,7 +17,7 @@ import 'game_state.dart';
 import 'entities/board.dart';
 import 'level.dart';
 
-class BlockBreakerGame extends Game with MouseListener, PointerListener {
+class BlockBreakerGame extends Game with PointerListener {
   final AssetManager _assetManager;
   final World _world;
   final List<Block> _blocks;
@@ -123,7 +122,7 @@ class BlockBreakerGame extends Game with MouseListener, PointerListener {
   void onPointerMove(PointerMoveEvent event) => _processMoveInput(event);
 
   @override
-  void onMouseHover(PointerHoverEvent event) => _processMoveInput(event);
+  void onPointerHover(PointerHoverEvent event) => _processMoveInput(event);
 
   @override
   void update(double dt) {
