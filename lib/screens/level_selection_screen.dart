@@ -5,16 +5,19 @@ import 'package:go_router/go_router.dart';
 import '../constants.dart';
 import '../core/game/block_breaker_game.dart';
 import '../core/game/level.dart';
+import '../services/level_manager.dart';
 import '../theme.dart';
 import '../widgets/block_button.dart';
 
 class LevelSelectionScreen extends StatefulWidget {
   final RouteObserver<ModalRoute<void>> routeObserver;
+  final LevelManager levelManager;
   final BlockBreakerGame game;
 
   const LevelSelectionScreen({
     super.key,
     required this.routeObserver,
+    required this.levelManager,
     required this.game,
   });
 
@@ -27,6 +30,7 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen>
   late final PageController _pageController;
 
   BlockBreakerGame get _game => widget.game;
+  LevelManager get _levelManager => widget.levelManager;
 
   late int _selectedLevelIndex;
 
@@ -60,14 +64,19 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen>
   void didPopNext() {
     super.didPopNext();
 
+    _selectedLevelIndex = _levelManager.lastPlayedLevelIndex;
+
     _game.reset(false);
     _game.loadLevel(levels[_selectedLevelIndex]);
+
+    _pageController.jumpToPage(_selectedLevelIndex);
 
     // This needs to be called after the first frame to ensure that the
     // IgnorePointer widget unlocks the pointer after navigating away from
     // the level screen.
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _game.notifyListeners();
+      setState(() {});
     });
   }
 
@@ -150,25 +159,26 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen>
               ),
             ),
           ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: const EdgeInsets.all(8).add(
-              const EdgeInsets.only(
-                bottom: kSafeBottomOffset + 48,
+        if (_selectedLevelIndex <= _levelManager.highestLevelIndex)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(8).add(
+                const EdgeInsets.only(
+                  bottom: kSafeBottomOffset + 48,
+                ),
               ),
-            ),
-            child: BlockButton(
-              onPressed: () {
-                context.push('/level/${_selectedLevelIndex + 1}');
-              },
-              child: Text(
-                'Play',
-                style: context.textTheme.titleLarge,
+              child: BlockButton(
+                onPressed: () {
+                  context.push('/level/${_selectedLevelIndex + 1}');
+                },
+                child: Text(
+                  'Play',
+                  style: context.textTheme.titleLarge,
+                ),
               ),
             ),
           ),
-        ),
       ],
     );
   }

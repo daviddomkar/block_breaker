@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_shaders/flutter_shaders.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 import 'core/engine/widgets/game_widget.dart';
 import 'core/game/block_breaker_game.dart';
@@ -14,6 +15,7 @@ import 'screens/level_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/level_selection_screen.dart';
 import 'services/asset_manager.dart';
+import 'services/level_manager.dart';
 import 'theme.dart';
 
 Future<void> main() async {
@@ -26,21 +28,27 @@ Future<void> main() async {
 
   GoogleFonts.config.allowRuntimeFetching = false;
 
+  final sharedPreferences = await SharedPreferences.getInstance();
+
   final assetManager = await AssetManager.load();
+  final levelManager = LevelManager(prefs: sharedPreferences);
 
   runApp(
     BlockBreakerApp(
       assetManager: assetManager,
+      levelManager: levelManager,
     ),
   );
 }
 
 class BlockBreakerApp extends StatefulWidget {
   final AssetManager assetManager;
+  final LevelManager levelManager;
 
   const BlockBreakerApp({
     super.key,
     required this.assetManager,
+    required this.levelManager,
   });
 
   @override
@@ -83,6 +91,7 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
             return NoTransitionPage(
               child: LevelSelectionScreen(
                 routeObserver: _routeObserver,
+                levelManager: widget.levelManager,
                 game: _game,
               ),
             );
@@ -94,6 +103,7 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
             return NoTransitionPage(
               child: LevelScreen(
                 game: _game,
+                levelManager: widget.levelManager,
                 levelIndex: int.parse(state.pathParameters['index']!) - 1,
               ),
             );

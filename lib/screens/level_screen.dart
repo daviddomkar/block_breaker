@@ -7,14 +7,21 @@ import '../constants.dart';
 import '../core/game/block_breaker_game.dart';
 import '../core/game/game_state.dart';
 import '../core/game/level.dart';
+import '../services/level_manager.dart';
 import '../theme.dart';
 import '../widgets/block_button.dart';
 
 class LevelScreen extends StatefulWidget {
+  final LevelManager levelManager;
   final BlockBreakerGame game;
   final int levelIndex;
 
-  const LevelScreen({super.key, required this.game, required this.levelIndex});
+  const LevelScreen({
+    super.key,
+    required this.levelManager,
+    required this.game,
+    required this.levelIndex,
+  });
 
   @override
   State<LevelScreen> createState() => _LevelScreenState();
@@ -24,6 +31,7 @@ class _LevelScreenState extends State<LevelScreen> {
   late final FocusNode _focusNode;
 
   BlockBreakerGame get _game => widget.game;
+  LevelManager get _levelManager => widget.levelManager;
 
   @override
   void initState() {
@@ -39,10 +47,23 @@ class _LevelScreenState extends State<LevelScreen> {
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _game.notifyListeners();
     });
+
+    _levelManager.updateLastPlayedLevelIndex(widget.levelIndex);
+
+    _game.addListener(_onGameStateChanged);
+  }
+
+  void _onGameStateChanged() {
+    if (_game.state == GameState.won) {
+      if (_levelManager.highestLevelIndex < widget.levelIndex + 1) {
+        _levelManager.updateHighestLevelIndex(widget.levelIndex + 1);
+      }
+    }
   }
 
   @override
   void dispose() {
+    _game.removeListener(_onGameStateChanged);
     _focusNode.dispose();
     super.dispose();
   }
