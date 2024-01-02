@@ -8,18 +8,25 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
-import 'core/engine/widgets/game_widget.dart';
-import 'core/game/block_breaker_game.dart';
-import 'core/game/game_state.dart';
-import 'screens/level_screen.dart';
-import 'screens/home_screen.dart';
-import 'screens/level_selection_screen.dart';
+import 'engine/widgets/game_widget.dart';
+import 'game/block_breaker_game.dart';
+import 'game/game_state.dart';
+import 'ui/screens/level_screen.dart';
+import 'ui/screens/home_screen.dart';
+import 'ui/screens/level_selection_screen.dart';
 import 'services/asset_manager.dart';
 import 'services/progression_store.dart';
 import 'theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitDown,
+    DeviceOrientation.portraitUp,
+  ]);
+
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
 
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('assets/fonts/OFL.txt');
@@ -135,7 +142,15 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
               ..setFloat(3, size.height)
               ..setImageSampler(0, image);
 
-            canvas.drawImage(image, Offset.zero, Paint());
+            canvas.drawImageRect(
+                image,
+                Offset.zero &
+                    Size(
+                      image.width.toDouble(),
+                      image.height.toDouble(),
+                    ),
+                Offset.zero & size,
+                Paint());
 
             canvas.saveLayer(
               null,

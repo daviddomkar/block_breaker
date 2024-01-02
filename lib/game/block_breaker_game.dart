@@ -1,11 +1,12 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:forge2d/forge2d.dart';
 
-import '../../constants.dart';
-import '../../services/asset_manager.dart';
+import '../constants.dart';
+import '../services/asset_manager.dart';
 import '../engine/game.dart';
 import '../engine/mixins/pointer_listener.dart';
 import '../engine/viewport.dart';
@@ -122,7 +123,14 @@ class BlockBreakerGame extends Game with PointerListener {
   void onPointerMove(PointerMoveEvent event) => _processMoveInput(event);
 
   @override
-  void onPointerHover(PointerHoverEvent event) => _processMoveInput(event);
+  void onPointerHover(PointerHoverEvent event) {
+    if (defaultTargetPlatform
+        case TargetPlatform.android || TargetPlatform.iOS) {
+      return;
+    }
+
+    _processMoveInput(event);
+  }
 
   @override
   void update(double dt) {
@@ -264,11 +272,11 @@ class BlockBreakerGame extends Game with PointerListener {
   }
 
   void reset([notify = true]) {
-    for (var block in _blocks) {
+    for (final block in _blocks) {
       _scheduleBlockDisposal(block);
     }
 
-    for (var block in _blocksToDispose) {
+    for (final block in _blocksToDispose) {
       _blocks.remove(block);
       block.dispose();
     }

@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:forge2d/forge2d.dart';
 
-import '../../../services/asset_manager.dart';
+import '../../services/asset_manager.dart';
 import '../../engine/viewport.dart';
 
 class Board {

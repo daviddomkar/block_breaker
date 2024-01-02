@@ -2,8 +2,8 @@ import 'dart:ui';
 
 import 'package:forge2d/forge2d.dart';
 
-import '../../../constants.dart';
-import '../../../services/asset_manager.dart';
+import '../../constants.dart';
+import '../../services/asset_manager.dart';
 import 'board.dart';
 
 class Paddle {

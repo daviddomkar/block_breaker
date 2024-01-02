@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import '../../services/asset_manager.dart';
+import '../services/asset_manager.dart';
 
 class NinePatchTexture {
   static final _paint = Paint()

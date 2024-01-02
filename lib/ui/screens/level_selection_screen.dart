@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:go_router/go_router.dart';
 
-import '../constants.dart';
-import '../core/game/block_breaker_game.dart';
-import '../core/game/level.dart';
-import '../services/progression_store.dart';
-import '../theme.dart';
+import '../../constants.dart';
+import '../../game/block_breaker_game.dart';
+import '../../game/level.dart';
+import '../../services/progression_store.dart';
+import '../../theme.dart';
 import '../widgets/block_button.dart';
 
 class LevelSelectionScreen extends StatefulWidget {

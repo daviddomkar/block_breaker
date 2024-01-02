@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../theme.dart';
+import '../../theme.dart';
 import '../widgets/block_button.dart';
 
 class HomeScreen extends StatelessWidget {

@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 
-import '../core/engine/nine_patch_texture.dart';
+import '../engine/nine_patch_texture.dart';
 
 class AssetManager {
   // Textures
