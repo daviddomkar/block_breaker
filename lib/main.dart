@@ -38,24 +38,24 @@ Future<void> main() async {
   final sharedPreferences = await SharedPreferences.getInstance();
 
   final assetManager = await AssetManager.load();
-  final levelManager = ProgressionStore(prefs: sharedPreferences);
+  final progressionStore = ProgressionStore(prefs: sharedPreferences);
 
   runApp(
     BlockBreakerApp(
       assetManager: assetManager,
-      levelManager: levelManager,
+      progressionStore: progressionStore,
     ),
   );
 }
 
 class BlockBreakerApp extends StatefulWidget {
   final AssetManager assetManager;
-  final ProgressionStore levelManager;
+  final ProgressionStore progressionStore;
 
   const BlockBreakerApp({
     super.key,
     required this.assetManager,
-    required this.levelManager,
+    required this.progressionStore,
   });
 
   @override
@@ -98,7 +98,7 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
             return NoTransitionPage(
               child: LevelSelectionScreen(
                 routeObserver: _routeObserver,
-                progressionStore: widget.levelManager,
+                progressionStore: widget.progressionStore,
                 game: _game,
               ),
             );
@@ -110,7 +110,7 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
             return NoTransitionPage(
               child: LevelScreen(
                 game: _game,
-                progressionStore: widget.levelManager,
+                progressionStore: widget.progressionStore,
                 levelIndex: int.parse(state.pathParameters['index']!) - 1,
               ),
             );
@@ -130,6 +130,7 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       title: 'Block Breaker',
       theme: buildTheme(),
       builder: (context, child) {
