@@ -15,7 +15,7 @@ import 'screens/level_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/level_selection_screen.dart';
 import 'services/asset_manager.dart';
-import 'services/level_manager.dart';
+import 'services/progression_store.dart';
 import 'theme.dart';
 
 Future<void> main() async {
@@ -31,7 +31,7 @@ Future<void> main() async {
   final sharedPreferences = await SharedPreferences.getInstance();
 
   final assetManager = await AssetManager.load();
-  final levelManager = LevelManager(prefs: sharedPreferences);
+  final levelManager = ProgressionStore(prefs: sharedPreferences);
 
   runApp(
     BlockBreakerApp(
@@ -43,7 +43,7 @@ Future<void> main() async {
 
 class BlockBreakerApp extends StatefulWidget {
   final AssetManager assetManager;
-  final LevelManager levelManager;
+  final ProgressionStore levelManager;
 
   const BlockBreakerApp({
     super.key,
@@ -91,7 +91,7 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
             return NoTransitionPage(
               child: LevelSelectionScreen(
                 routeObserver: _routeObserver,
-                levelManager: widget.levelManager,
+                progressionStore: widget.levelManager,
                 game: _game,
               ),
             );
@@ -103,7 +103,7 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
             return NoTransitionPage(
               child: LevelScreen(
                 game: _game,
-                levelManager: widget.levelManager,
+                progressionStore: widget.levelManager,
                 levelIndex: int.parse(state.pathParameters['index']!) - 1,
               ),
             );

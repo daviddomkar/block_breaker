@@ -5,19 +5,19 @@ import 'package:go_router/go_router.dart';
 import '../constants.dart';
 import '../core/game/block_breaker_game.dart';
 import '../core/game/level.dart';
-import '../services/level_manager.dart';
+import '../services/progression_store.dart';
 import '../theme.dart';
 import '../widgets/block_button.dart';
 
 class LevelSelectionScreen extends StatefulWidget {
   final RouteObserver<ModalRoute<void>> routeObserver;
-  final LevelManager levelManager;
+  final ProgressionStore progressionStore;
   final BlockBreakerGame game;
 
   const LevelSelectionScreen({
     super.key,
     required this.routeObserver,
-    required this.levelManager,
+    required this.progressionStore,
     required this.game,
   });
 
@@ -30,7 +30,7 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen>
   late final PageController _pageController;
 
   BlockBreakerGame get _game => widget.game;
-  LevelManager get _levelManager => widget.levelManager;
+  ProgressionStore get _progressionStore => widget.progressionStore;
 
   late int _selectedLevelIndex;
 
@@ -64,7 +64,7 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen>
   void didPopNext() {
     super.didPopNext();
 
-    _selectedLevelIndex = _levelManager.lastPlayedLevelIndex;
+    _selectedLevelIndex = _progressionStore.lastPlayedLevelIndex;
 
     _game.reset(false);
     _game.loadLevel(levels[_selectedLevelIndex]);
@@ -159,7 +159,7 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen>
               ),
             ),
           ),
-        if (_selectedLevelIndex <= _levelManager.highestLevelIndex)
+        if (_selectedLevelIndex <= _progressionStore.highestLevelIndex)
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(

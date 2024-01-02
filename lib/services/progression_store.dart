@@ -1,12 +1,12 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LevelManager {
+class ProgressionStore {
   final SharedPreferences _prefs;
 
   int _lastPlayedLevelIndex;
   int _highestLevelIndex;
 
-  LevelManager({
+  ProgressionStore({
     required SharedPreferences prefs,
   })  : _prefs = prefs,
         _lastPlayedLevelIndex = prefs.getInt('lastPlayedLevelIndex') ?? 0,
