@@ -4,12 +4,12 @@ class GameLoop {
   final void Function(double) _onUpdate;
   late final Ticker _ticker;
 
-  Duration _previousFrameDuration;
+  Duration _previousDuration;
 
   GameLoop({
     required void Function(double) onUpdate,
   })  : _onUpdate = onUpdate,
-        _previousFrameDuration = Duration.zero {
+        _previousDuration = Duration.zero {
     _ticker = Ticker(_tick);
   }
 
@@ -21,7 +21,7 @@ class GameLoop {
 
   void stop() {
     _ticker.stop();
-    _previousFrameDuration = Duration.zero;
+    _previousDuration = Duration.zero;
   }
 
   void dispose() {
@@ -29,9 +29,9 @@ class GameLoop {
   }
 
   void _tick(Duration duration) {
-    final durationDelta = duration - _previousFrameDuration;
+    final durationDelta = duration - _previousDuration;
     final dt = durationDelta.inMicroseconds / Duration.microsecondsPerSecond;
-    _previousFrameDuration = duration;
+    _previousDuration = duration;
     _onUpdate(dt);
   }
 }

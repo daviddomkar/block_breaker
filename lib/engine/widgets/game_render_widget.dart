@@ -37,6 +37,22 @@ class GameRenderObject extends RenderBox with WidgetsBindingObserver {
     required Game game,
   }) : _game = game;
 
+  set game(Game game) {
+    if (_game == game) {
+      return;
+    }
+
+    if (attached) {
+      _detachGame();
+    }
+
+    _game = game;
+
+    if (attached) {
+      _attachGame();
+    }
+  }
+
   @override
   void attach(PipelineOwner owner) {
     super.attach(owner);
@@ -50,10 +66,15 @@ class GameRenderObject extends RenderBox with WidgetsBindingObserver {
   }
 
   @override
+  bool get sizedByParent => true;
+
+  @override
   void performResize() {
     super.performResize();
 
     if (_game.viewport.widgetSize == null) {
+      // This sets the `widgetSize` inside viewport, so the game loop
+      // is started only once
       _game.viewport.notifyWidgetPerformedResize(size);
       _game.init();
 
@@ -69,17 +90,15 @@ class GameRenderObject extends RenderBox with WidgetsBindingObserver {
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    context.canvas.save();
     context.canvas.translate(offset.dx, offset.dy);
 
-    final transform = game.viewport.transform;
+    final transform = _game.viewport.transform;
 
     context.canvas.save();
     context.canvas.transform(transform.storage);
 
-    game.render(context.canvas);
+    _game.render(context.canvas);
 
-    context.canvas.restore();
     context.canvas.restore();
 
     /*
@@ -125,9 +144,6 @@ class GameRenderObject extends RenderBox with WidgetsBindingObserver {
     }
   }
 
-  @override
-  bool get sizedByParent => true;
-
   void _attachGame() {
     _bindLifecycleListener();
   }
@@ -153,24 +169,4 @@ class GameRenderObject extends RenderBox with WidgetsBindingObserver {
   void _unbindLifecycleListener() {
     WidgetsBinding.instance.removeObserver(this);
   }
-
-  set game(Game game) {
-    if (_game == game) {
-      return;
-    }
-
-    if (attached) {
-      _detachGame();
-    }
-
-    _game = game;
-
-    if (attached) {
-      _attachGame();
-    }
-
-    _game = game;
-  }
-
-  Game get game => _game;
 }
