@@ -10,7 +10,7 @@ class Board {
   final Viewport _viewport;
   final Size _size;
 
-  late final List<Body> _edges;
+  late final Body _body;
 
   Board({
     required AssetManager assetManager,
@@ -19,12 +19,11 @@ class Board {
     required Size size,
   })  : _assetManager = assetManager,
         _viewport = viewport,
-        _size = size,
-        _edges = [] {
-    _edges = _createBoundaries(world);
+        _size = size {
+    _body = _createBoundaries(world);
   }
 
-  List<Body> _createBoundaries(World world) {
+  Body _createBoundaries(World world) {
     final bounds = innerBounds;
 
     // Top edge
@@ -48,65 +47,64 @@ class Board {
       Vector2(bounds.bottomRight.dx * 0.1, bounds.bottomRight.dy * 0.1),
     );
 
-    return [topEdge, leftEdge, rightEdge];
+    final bodyDef = BodyDef(
+      position: Vector2.zero(),
+      type: BodyType.static,
+    );
+
+    return world.createBody(bodyDef)
+      ..createFixture(topEdge)
+      ..createFixture(leftEdge)
+      ..createFixture(rightEdge);
   }
 
-  Body _createBoundaryEdge(World world, Vector2 start, Vector2 end) {
+  FixtureDef _createBoundaryEdge(World world, Vector2 start, Vector2 end) {
     final edgeShape = EdgeShape()
       ..set(
         start,
         end,
       );
 
-    final edgeFixtureDef = FixtureDef(edgeShape, restitution: 1.0);
-
-    final edgeBodyDef = BodyDef(
-      position: Vector2.zero(),
-      type: BodyType.static,
-    );
-
-    return world.createBody(edgeBodyDef)..createFixture(edgeFixtureDef);
+    return FixtureDef(edgeShape, restitution: 1.0);
   }
 
   void dispose() {
-    for (final edge in _edges) {
-      edge.world.destroyBody(edge);
-    }
+    _body.world.destroyBody(_body);
   }
 
   void render(Canvas canvas) {
     final boardWallTopRect = Rect.fromLTWH(
-      -_size.width / 2 - 32,
-      -_viewport.size.height / 2,
-      _size.width + 64,
-      (_viewport.size.height - _size.height) / 2 + 32,
+      outerBounds.left,
+      outerBounds.top,
+      outerBounds.width,
+      (outerBounds.height - innerBounds.height) / 2 + 32,
     );
 
     _assetManager.boardWallTopTexture.render(canvas, boardWallTopRect);
 
     final boardWallBottomRect = Rect.fromLTWH(
-      -_size.width / 2 - 32,
-      _viewport.size.height / 2 - (_viewport.size.height - _size.height) / 2,
-      _size.width + 64,
-      (_viewport.size.height - _size.height) / 2,
+      outerBounds.left,
+      innerBounds.height / 2,
+      innerBounds.width + 64,
+      (outerBounds.height - innerBounds.height) / 2,
     );
 
     _assetManager.boardWallBottomTexture.render(canvas, boardWallBottomRect);
 
     final boardWallLeftRect = Rect.fromLTWH(
-      -_size.width / 2 - 32,
-      -_size.height / 2 + 32,
+      outerBounds.left,
+      innerBounds.top + 32,
       32,
-      _size.height - 32,
+      innerBounds.height - 32,
     );
 
     _assetManager.boardWallLeftTexture.render(canvas, boardWallLeftRect);
 
     final boardWallRightRect = Rect.fromLTWH(
-      _size.width / 2,
-      -_size.height / 2 + 32,
+      innerBounds.width / 2,
+      innerBounds.top + 32,
       32,
-      _size.height - 32,
+      innerBounds.height - 32,
     );
 
     _assetManager.boardWallRightTexture.render(canvas, boardWallRightRect);
@@ -126,7 +124,7 @@ class Board {
       -_size.width / 2 - 32,
       -_viewport.size.height / 2,
       _size.width + 64,
-      _size.height + (_viewport.size.height - _size.height),
+      _viewport.size.height,
     );
   }
 }
