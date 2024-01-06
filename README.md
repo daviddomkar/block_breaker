@@ -1,16 +1,7 @@
 # block_breaker
 
-A new Flutter project.
+A Flutter game inspired by the classical game Block Breaker. Made as a part of my Bachelor's thesis about multiplatform game development using Flutter.
 
-## Getting Started
+## Disclaimer
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This game is not meant to be a full game, but rather a proof of concept that Flutter can be used to create games. The game is not yet finished and is missing some features and bug fixes.
