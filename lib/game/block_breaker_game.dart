@@ -108,6 +108,10 @@ class BlockBreakerGame extends Game with PointerListener {
       block.dispose();
     }
 
+    _board.dispose();
+    _paddle.dispose();
+    _ball.dispose();
+
     super.dispose();
   }
 

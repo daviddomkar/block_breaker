@@ -128,21 +128,21 @@ class GameRenderObject extends RenderBox with WidgetsBindingObserver {
     */
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (attached) {
-      switch (state) {
-        case AppLifecycleState.resumed:
-          _gameLoop?.start();
-          break;
-        case AppLifecycleState.detached:
-        case AppLifecycleState.hidden:
-          _gameLoop?.stop();
-        default:
-          break;
-      }
+@override
+void didChangeAppLifecycleState(AppLifecycleState state) {
+  if (attached) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        _gameLoop?.start();
+        break;
+      case AppLifecycleState.detached:
+      case AppLifecycleState.hidden:
+        _gameLoop?.stop();
+      default:
+        break;
     }
   }
+}
 
   void _attachGame() {
     _bindLifecycleListener();

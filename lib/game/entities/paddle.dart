@@ -44,6 +44,10 @@ class Paddle {
     _body = world.createBody(bodyDef)..createFixture(fixtureDef);
   }
 
+  void dispose() {
+    _body.world.destroyBody(_body);
+  }
+
   set x(double x) {
     x = (x * 0.1).clamp(
       -_board.innerBounds.width / 2 * 0.1 + _width / 2,

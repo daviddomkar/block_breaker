@@ -10,6 +10,8 @@ class Board {
   final Viewport _viewport;
   final Size _size;
 
+  late final List<Body> _edges;
+
   Board({
     required AssetManager assetManager,
     required World world,
@@ -17,36 +19,39 @@ class Board {
     required Size size,
   })  : _assetManager = assetManager,
         _viewport = viewport,
-        _size = size {
-    _createBoundaries(world);
+        _size = size,
+        _edges = [] {
+    _edges = _createBoundaries(world);
   }
 
-  void _createBoundaries(World world) {
+  List<Body> _createBoundaries(World world) {
     final bounds = innerBounds;
 
     // Top edge
-    _createBoundaryEdge(
+    final topEdge = _createBoundaryEdge(
       world,
       Vector2(bounds.topLeft.dx * 0.1, bounds.topLeft.dy * 0.1),
       Vector2(bounds.topRight.dx * 0.1, bounds.topRight.dy * 0.1),
     );
 
     // Left edge
-    _createBoundaryEdge(
+    final leftEdge = _createBoundaryEdge(
       world,
       Vector2(bounds.topLeft.dx * 0.1, bounds.topLeft.dy * 0.1),
       Vector2(bounds.bottomLeft.dx * 0.1, bounds.bottomLeft.dy * 0.1),
     );
 
     // Right edge
-    _createBoundaryEdge(
+    final rightEdge = _createBoundaryEdge(
       world,
       Vector2(bounds.topRight.dx * 0.1, bounds.topRight.dy * 0.1),
       Vector2(bounds.bottomRight.dx * 0.1, bounds.bottomRight.dy * 0.1),
     );
+
+    return [topEdge, leftEdge, rightEdge];
   }
 
-  void _createBoundaryEdge(World world, Vector2 start, Vector2 end) {
+  Body _createBoundaryEdge(World world, Vector2 start, Vector2 end) {
     final edgeShape = EdgeShape()
       ..set(
         start,
@@ -60,7 +65,13 @@ class Board {
       type: BodyType.static,
     );
 
-    world.createBody(edgeBodyDef).createFixture(edgeFixtureDef);
+    return world.createBody(edgeBodyDef)..createFixture(edgeFixtureDef);
+  }
+
+  void dispose() {
+    for (final edge in _edges) {
+      edge.world.destroyBody(edge);
+    }
   }
 
   void render(Canvas canvas) {
