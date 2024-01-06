@@ -6,7 +6,7 @@ import '../../constants.dart';
 import '../../services/asset_manager.dart';
 import '../../engine/nine_patch_texture.dart';
 
-enum BlockType {
+enum BlockTier {
   grey,
   blue,
   purple,
@@ -18,7 +18,7 @@ class Block {
   final AssetManager _assetManager;
   final void Function(Block) _onDestroy;
 
-  BlockType _type;
+  BlockTier _tier;
 
   late final Body _body;
 
@@ -26,12 +26,12 @@ class Block {
     required AssetManager assetManager,
     required void Function(Block) onDestroy,
     required World world,
-    required BlockType type,
+    required BlockTier tier,
     required double x,
     required double y,
   })  : _assetManager = assetManager,
         _onDestroy = onDestroy,
-        _type = type {
+        _tier = tier {
     final shape = PolygonShape()
       ..setAsBoxXY(
         kBlockSize.width / 2 * 0.1,
@@ -62,20 +62,20 @@ class Block {
   }
 
   int destroy() {
-    switch (_type) {
-      case BlockType.grey:
+    switch (_tier) {
+      case BlockTier.grey:
         return 0;
-      case BlockType.blue:
+      case BlockTier.blue:
         _onDestroy(this);
         return 1;
-      case BlockType.purple:
-        _type = BlockType.blue;
+      case BlockTier.purple:
+        _tier = BlockTier.blue;
         return 2;
-      case BlockType.pink:
-        _type = BlockType.purple;
+      case BlockTier.pink:
+        _tier = BlockTier.purple;
         return 3;
-      case BlockType.golden:
-        _type = BlockType.pink;
+      case BlockTier.golden:
+        _tier = BlockTier.pink;
         return 4;
     }
   }
@@ -84,19 +84,19 @@ class Block {
     _body.world.destroyBody(_body);
   }
 
-  BlockType get type => _type;
+  BlockTier get type => _tier;
 
   NinePatchTexture get _texture {
-    switch (_type) {
-      case BlockType.grey:
+    switch (_tier) {
+      case BlockTier.grey:
         return _assetManager.blockGreyTexture;
-      case BlockType.blue:
+      case BlockTier.blue:
         return _assetManager.blockBlueTexture;
-      case BlockType.purple:
+      case BlockTier.purple:
         return _assetManager.blockPurpleTexture;
-      case BlockType.pink:
+      case BlockTier.pink:
         return _assetManager.blockPinkTexture;
-      case BlockType.golden:
+      case BlockTier.golden:
         return _assetManager.blockGoldenTexture;
     }
   }

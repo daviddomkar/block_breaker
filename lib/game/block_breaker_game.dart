@@ -151,7 +151,7 @@ class BlockBreakerGame extends Game with PointerListener {
     }
 
     if (_state == GameState.playing) {
-      if (_blocks.every((block) => block.type == BlockType.grey)) {
+      if (_blocks.every((block) => block.type == BlockTier.grey)) {
         _won();
       } else if (_ball.y - kBallRadius > _board.innerBounds.bottom) {
         if (_lives > 0) {
@@ -221,7 +221,7 @@ class BlockBreakerGame extends Game with PointerListener {
           assetManager: _assetManager,
           onDestroy: _scheduleBlockDisposal,
           world: _world,
-          type: BlockType.values[level.data[i][j]],
+          tier: BlockTier.values[level.data[i][j]],
           x: (level.width.isEven ? kBlockSize.width / 2 : 0) +
               kBlockSize.width * (j - (level.width ~/ 2)),
           y: _board.innerBounds.top +

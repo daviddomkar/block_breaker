@@ -189,12 +189,12 @@ List<Level> levels = List.unmodifiable([
   // Level 8
   Level(
     width: 5,
-    height: BlockType.values.length * 4,
+    height: BlockTier.values.length * 4,
     data: [
-      for (int i = 0; i < BlockType.values.length * 4; i++)
+      for (int i = 0; i < BlockTier.values.length * 4; i++)
         [
           for (int j = 0; j < 5; j++)
-            BlockType.values[i % BlockType.values.length].index,
+            BlockTier.values[i % BlockTier.values.length].index,
         ],
     ],
   ),
