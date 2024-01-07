@@ -154,7 +154,7 @@ class BlockBreakerGame extends Game with PointerListener {
       if (_blocks.every((block) => block.type == BlockTier.grey)) {
         _won();
       } else if (_ball.y - kBallRadius > _board.innerBounds.bottom) {
-        if (_lives > 0) {
+        if (_lives > 1) {
           _revive();
         } else {
           _gameOver();
