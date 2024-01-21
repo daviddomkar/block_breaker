@@ -100,49 +100,23 @@ class GameRenderObject extends RenderBox with WidgetsBindingObserver {
     _game.render(context.canvas);
 
     context.canvas.restore();
-
-    /*
-    context.pushLayer(
-      ImageFilterLayer(
-        imageFilter: ImageFilter.blur(
-          sigmaX: 5,
-          sigmaY: 5,
-        ),
-      ),
-      (PaintingContext context, Offset offset) {
-        context.canvas.save();
-        context.canvas.translate(offset.dx, offset.dy);
-
-        final transform = game.viewport.transform;
-
-        context.canvas.save();
-        context.canvas.transform(transform.storage);
-
-        game.render(context.canvas);
-
-        context.canvas.restore();
-        context.canvas.restore();
-      },
-      offset,
-    );
-    */
   }
 
-@override
-void didChangeAppLifecycleState(AppLifecycleState state) {
-  if (attached) {
-    switch (state) {
-      case AppLifecycleState.resumed:
-        _gameLoop?.start();
-        break;
-      case AppLifecycleState.detached:
-      case AppLifecycleState.hidden:
-        _gameLoop?.stop();
-      default:
-        break;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (attached) {
+      switch (state) {
+        case AppLifecycleState.resumed:
+          _gameLoop?.start();
+          break;
+        case AppLifecycleState.detached:
+        case AppLifecycleState.hidden:
+          _gameLoop?.stop();
+        default:
+          break;
+      }
     }
   }
-}
 
   void _attachGame() {
     _bindLifecycleListener();
