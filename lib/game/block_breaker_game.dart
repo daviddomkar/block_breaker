@@ -177,27 +177,25 @@ class BlockBreakerGame extends Game with PointerListener {
     _board.render(canvas);
     _paddle.render(canvas);
 
+    // multiplies everything drawn before with pixels from the layer
     canvas.saveLayer(null, Paint()..blendMode = BlendMode.multiply);
 
-    canvas.drawRect(
-      Rect.fromLTWH(
-        -viewport.size.width / 2,
-        -viewport.size.height / 2,
-        viewport.size.width,
-        viewport.size.height,
-      ),
-      Paint()..color = const Color(0xFF666666),
-    );
+    // draws darker color over the whole viewport
+    canvas.drawPaint(Paint()..color = const Color(0xFF666666));
 
+    // exclude pixels from this layer from pixels from previous layer
     canvas.saveLayer(null, Paint()..blendMode = BlendMode.xor);
 
+    // draw the cutout using board’s outer bounds
     canvas.drawRect(
       _board.outerBounds,
       Paint(),
     );
 
+    // restore to previous layer
     canvas.restore();
 
+    // restore to previous layer
     canvas.restore();
   }
 
