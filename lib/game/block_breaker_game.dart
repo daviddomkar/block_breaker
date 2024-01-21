@@ -180,7 +180,7 @@ class BlockBreakerGame extends Game with PointerListener {
     // multiplies everything drawn before with pixels from the layer
     canvas.saveLayer(null, Paint()..blendMode = BlendMode.multiply);
 
-    // draws darker color over the whole viewport
+    // draws darker color over the whole viewport, ommited
     canvas.drawPaint(Paint()..color = const Color(0xFF666666));
 
     // exclude pixels from this layer from pixels from previous layer
