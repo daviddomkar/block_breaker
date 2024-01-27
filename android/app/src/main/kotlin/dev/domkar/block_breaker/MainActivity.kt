@@ -1,4 +1,4 @@
-package com.example.block_breaker
+package dev.domkar.block_breaker
 
 import io.flutter.embedding.android.FlutterActivity
 
