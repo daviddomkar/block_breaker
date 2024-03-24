@@ -89,26 +89,24 @@ class _LevelScreenState extends State<LevelScreen> {
           listenable: widget.game,
           builder: (context, child) {
             if (_game.state case GameState.ready || GameState.playing) {
-              return Column(
-                children: [
-                  Stack(
+              return Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Score: ${_game.score}',
-                            style: context.textTheme.bodyLarge,
-                          ),
-                          Text(
-                            'Lives: ${widget.game.lives}',
-                            style: context.textTheme.bodyLarge,
-                          ),
-                        ],
+                      Text(
+                        'Score: ${_game.score}',
+                        style: context.textTheme.bodyLarge,
+                      ),
+                      Text(
+                        'Lives: ${widget.game.lives}',
+                        style: context.textTheme.bodyLarge,
                       ),
                     ],
                   ),
-                ],
+                ),
               );
             }
 

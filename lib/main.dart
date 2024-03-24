@@ -200,6 +200,54 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
                     ),
                   ),
                 ),
+                // Pause button for mobile devices needs to be rendered on top of
+                // everything else due to [IgnorePointer] logic. This solution
+                // is not ideal but it works for this simple project.
+                ListenableBuilder(
+                  listenable: _game,
+                  builder: (context, child) {
+                    return Visibility(
+                      visible: _game.state == GameState.ready ||
+                          _game.state == GameState.playing,
+                      child: child!,
+                    );
+                  },
+                  child: SizedBox.fromSize(
+                    size: MediaQuery.sizeOf(context),
+                    child: FittedBox(
+                      child: SizedBox.fromSize(
+                        size: kViewportSize,
+                        child: Center(
+                          child: SizedBox.fromSize(
+                            size: Size(kBoardSize.width, kBoardSize.height),
+                            child: Align(
+                              alignment: Alignment.topCenter,
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 8.0),
+                                child: IconButton(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  focusColor: Colors.transparent,
+                                  hoverColor: Colors.transparent,
+                                  visualDensity: const VisualDensity(
+                                    horizontal: VisualDensity.minimumDensity,
+                                    vertical: VisualDensity.minimumDensity,
+                                  ),
+                                  icon: const Icon(
+                                    Icons.pause,
+                                  ),
+                                  onPressed: () {
+                                    _game.pause();
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
