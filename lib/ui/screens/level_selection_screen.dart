@@ -38,13 +38,13 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen>
   void initState() {
     super.initState();
 
-    _selectedLevelIndex = 0;
+    _selectedLevelIndex = _progressionStore.lastPlayedLevelIndex;
 
     _pageController = PageController(
       initialPage: _selectedLevelIndex,
     );
 
-    _game.loadLevel(levels[_selectedLevelIndex]);
+    _loadLevel(_selectedLevelIndex);
   }
 
   @override
@@ -66,8 +66,7 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen>
 
     _selectedLevelIndex = _progressionStore.lastPlayedLevelIndex;
 
-    _game.reset(false);
-    _game.loadLevel(levels[_selectedLevelIndex]);
+    _loadLevel(_selectedLevelIndex);
 
     _pageController.jumpToPage(_selectedLevelIndex);
 
@@ -80,6 +79,14 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen>
     });
   }
 
+  void _loadLevel(int index) {
+    _game.reset(false);
+
+    if (index <= _progressionStore.highestLevelIndex) {
+      _game.loadLevel(levels[index]);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -90,7 +97,7 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen>
             setState(() {
               _selectedLevelIndex = index;
             });
-            _game.loadLevel(levels[index]);
+            _loadLevel(_selectedLevelIndex);
           },
           children: [
             for (final level in levels)
@@ -121,6 +128,33 @@ class _LevelSelectionScreenState extends State<LevelSelectionScreen>
             ),
           ),
         ),
+        if (_selectedLevelIndex > _progressionStore.highestLevelIndex)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(8).add(
+                const EdgeInsets.only(
+                  bottom: kSafeBottomOffset + 128 + 256,
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Locked',
+                    style: context.textTheme.displayMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Complete previous levels to unlock this level',
+                    style: context.textTheme.bodyLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
         if (_selectedLevelIndex > 0)
           Align(
             alignment: Alignment.bottomLeft,

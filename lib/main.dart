@@ -87,8 +87,11 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
         GoRoute(
           path: '/',
           pageBuilder: (context, state) {
-            return const NoTransitionPage(
-              child: HomeScreen(),
+            return NoTransitionPage(
+              child: HomeScreen(
+                routeObserver: _routeObserver,
+                game: _game,
+              ),
             );
           },
         ),
@@ -223,7 +226,7 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
                             child: Align(
                               alignment: Alignment.topCenter,
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
+                                padding: const EdgeInsets.only(top: 4.0),
                                 child: IconButton(
                                   splashColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
@@ -235,6 +238,7 @@ class _BlockBreakerAppState extends State<BlockBreakerApp> {
                                   ),
                                   icon: const Icon(
                                     Icons.pause,
+                                    size: 32,
                                   ),
                                   onPressed: () {
                                     _game.pause();

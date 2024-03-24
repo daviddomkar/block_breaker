@@ -70,172 +70,178 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8),
-      child: KeyboardListener(
-        focusNode: _focusNode,
-        autofocus: true,
-        onKeyEvent: (event) {
-          if (event is KeyUpEvent &&
-              event.logicalKey == LogicalKeyboardKey.escape) {
-            if (_game.state == GameState.paused) {
-              _game.resume();
-            } else {
-              _game.pause();
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        _game.pause();
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: KeyboardListener(
+          focusNode: _focusNode,
+          autofocus: true,
+          onKeyEvent: (event) {
+            if (event is KeyUpEvent &&
+                event.logicalKey == LogicalKeyboardKey.escape) {
+              if (_game.state == GameState.paused) {
+                _game.resume();
+              } else {
+                _game.pause();
+              }
             }
-          }
-        },
-        child: ListenableBuilder(
-          listenable: widget.game,
-          builder: (context, child) {
-            if (_game.state case GameState.ready || GameState.playing) {
-              return Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Score: ${_game.score}',
-                        style: context.textTheme.bodyLarge,
-                      ),
-                      Text(
-                        'Lives: ${widget.game.lives}',
-                        style: context.textTheme.bodyLarge,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }
-
-            if (_game.state == GameState.paused) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Paused',
-                    style: context.textTheme.displayMedium,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Score: ${_game.score}',
-                    style: context.textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 16),
-                  BlockButton(
-                    onPressed: () {
-                      _game.resume();
-                    },
-                    child: Text(
-                      'Resume',
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.titleLarge,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  BlockButton(
-                    onPressed: () {
-                      context.pop();
-                    },
-                    child: Text(
-                      'Exit',
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.titleLarge,
-                    ),
-                  ),
-                  const SizedBox(height: kSafeBottomOffset),
-                ],
-              );
-            }
-
-            if (_game.state == GameState.won) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'You Won!',
-                    style: context.textTheme.displayMedium,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Score: ${_game.score}',
-                    style: context.textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 16),
-                  BlockButton(
-                    onPressed: () {
-                      context.pop();
-                      context.push(
-                        '/level/${widget.levelIndex + 2}',
-                      );
-                    },
-                    child: Text(
-                      'Next Level',
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.titleLarge,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  BlockButton(
-                    onPressed: () {
-                      context.pop();
-                    },
-                    child: Text(
-                      'Exit',
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.titleLarge,
-                    ),
-                  ),
-                  const SizedBox(height: kSafeBottomOffset),
-                ],
-              );
-            }
-
-            if (_game.state == GameState.gameOver) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Game Over',
-                    style: context.textTheme.displayMedium,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Score: ${_game.score}',
-                    style: context.textTheme.bodyLarge,
-                  ),
-                  const SizedBox(height: 16),
-                  BlockButton(
-                    onPressed: () {
-                      _game.loadLevel(levels[widget.levelIndex]);
-                      _game.startLevel();
-                    },
-                    child: Text(
-                      'Try Again',
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.titleLarge,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  BlockButton(
-                    onPressed: () {
-                      context.pop();
-                    },
-                    child: Text(
-                      'Exit',
-                      textAlign: TextAlign.center,
-                      style: context.textTheme.titleLarge,
-                    ),
-                  ),
-                  const SizedBox(height: kSafeBottomOffset),
-                ],
-              );
-            }
-
-            return throw 'Invalid game state: ${_game.state}';
           },
+          child: ListenableBuilder(
+            listenable: widget.game,
+            builder: (context, child) {
+              if (_game.state case GameState.ready || GameState.playing) {
+                return Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Score: ${_game.score}',
+                          style: context.textTheme.bodyLarge,
+                        ),
+                        Text(
+                          'Lives: ${widget.game.lives}',
+                          style: context.textTheme.bodyLarge,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+
+              if (_game.state == GameState.paused) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Paused',
+                      style: context.textTheme.displayMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Score: ${_game.score}',
+                      style: context.textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 16),
+                    BlockButton(
+                      onPressed: () {
+                        _game.resume();
+                      },
+                      child: Text(
+                        'Resume',
+                        textAlign: TextAlign.center,
+                        style: context.textTheme.titleLarge,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    BlockButton(
+                      onPressed: () {
+                        context.pop();
+                      },
+                      child: Text(
+                        'Exit',
+                        textAlign: TextAlign.center,
+                        style: context.textTheme.titleLarge,
+                      ),
+                    ),
+                    const SizedBox(height: kSafeBottomOffset),
+                  ],
+                );
+              }
+
+              if (_game.state == GameState.won) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'You Won!',
+                      style: context.textTheme.displayMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Score: ${_game.score}',
+                      style: context.textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 16),
+                    BlockButton(
+                      onPressed: () {
+                        context.pop();
+                        context.push(
+                          '/level/${widget.levelIndex + 2}',
+                        );
+                      },
+                      child: Text(
+                        'Next Level',
+                        textAlign: TextAlign.center,
+                        style: context.textTheme.titleLarge,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    BlockButton(
+                      onPressed: () {
+                        context.pop();
+                      },
+                      child: Text(
+                        'Exit',
+                        textAlign: TextAlign.center,
+                        style: context.textTheme.titleLarge,
+                      ),
+                    ),
+                    const SizedBox(height: kSafeBottomOffset),
+                  ],
+                );
+              }
+
+              if (_game.state == GameState.gameOver) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Game Over',
+                      style: context.textTheme.displayMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Score: ${_game.score}',
+                      style: context.textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 16),
+                    BlockButton(
+                      onPressed: () {
+                        _game.loadLevel(levels[widget.levelIndex]);
+                        _game.startLevel();
+                      },
+                      child: Text(
+                        'Try Again',
+                        textAlign: TextAlign.center,
+                        style: context.textTheme.titleLarge,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    BlockButton(
+                      onPressed: () {
+                        context.pop();
+                      },
+                      child: Text(
+                        'Exit',
+                        textAlign: TextAlign.center,
+                        style: context.textTheme.titleLarge,
+                      ),
+                    ),
+                    const SizedBox(height: kSafeBottomOffset),
+                  ],
+                );
+              }
+
+              return throw 'Invalid game state: ${_game.state}';
+            },
+          ),
         ),
       ),
     );
