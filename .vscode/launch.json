@@ -7,19 +7,28 @@
         {
             "name": "block_breaker",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+                "--web-renderer=canvaskit",
+            ]
         },
         {
             "name": "block_breaker (profile mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "profile"
+            "flutterMode": "profile",
+            "args": [
+                "--web-renderer=canvaskit",
+            ]
         },
         {
             "name": "block_breaker (release mode)",
             "request": "launch",
             "type": "dart",
-            "flutterMode": "release"
+            "flutterMode": "release",
+            "args": [
+                "--web-renderer=canvaskit",
+            ]
         }
     ]
 }
