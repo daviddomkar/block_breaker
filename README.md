@@ -4,6 +4,6 @@ A Flutter game inspired by the classical game Block Breaker. Made as a part of m
 
 ## Screenshots
 
-![Home]('screenshots/home.png')
-![Level Selection]('screenshots/level_selection.png')
-![Gameplay]('screenshots/gameplay.png')
+![Home](screenshots/home.png)
+![Level Selection](screenshots/level_selection.png)
+![Gameplay](screenshots/gameplay.png)
